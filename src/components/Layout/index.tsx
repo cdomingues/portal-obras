@@ -25,7 +25,7 @@ function PublicHome() {
             
            
           >
-            <Box height='150px'> <Image alt="logo" width="200px" src={brasao} /> </Box>  < Box mr='0'><Header /></Box>
+           
            
           </Box>
     

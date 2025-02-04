@@ -1,17 +1,16 @@
-import Obras from "../../components/ListarObras2";
+import Footer from "../../components/Footer";
+import Obras from "../../components/ListarObras";
 import Menu from '../../components/Menu'
+import Painel from "../../components/Painel";
 function ListarObras() {
     return (
-      <>   <div  style={{backgroundColor: 'black', width: '100%', height: '1px'}} >
-   
-
-      </div> 
-      <Menu />
-      <div  style={{backgroundColor: 'black', width: '100%', height: '1px'}} >
-   
-
-      </div> 
-       <Obras /> </>
+      <>   
+     
+     <Menu />
+      <Painel />
+       <Obras /> 
+       <Footer />
+       </>
     );
   }
   

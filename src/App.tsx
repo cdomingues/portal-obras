@@ -8,6 +8,7 @@ import HomePage from '../src/pages/Home';
 import Maps from '../src/pages/Maps';
 import Obras from '../src/pages/Obras';
 import Layout from "./components/Layout";
+import Header from "./components/Header";
 
 
 
@@ -16,7 +17,9 @@ function App()
 {
   return(
     <>
-    <Layout />
+    <Header />
+    
+    
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} /> {/* Página inicial */}

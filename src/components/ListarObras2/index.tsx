@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { CSVLink } from "react-csv";
 import moneyFormatter from '../../utils/moneyFormatter'
+import * as XLSX from 'xlsx'
+import { saveAs } from "file-saver";
 
 type ValorExecutado = {
   id: string;
@@ -101,7 +103,7 @@ const columns: TableColumn<Obra>[] = [
   //{ name: "Órgão Responsável", selector: (row) => row.orgao_responsavel , sortable: true,},
   { name: "Valor Total Medição", selector: (row) =>moneyFormatter(row.valor_total_medicao) },
   { name: "Valor Total Aditamento", selector: (row) => moneyFormatter(row.valor_total_aditamento) },
-  { name: "Valor Total Reajuste", selector: (row) => row.valor_total_reajuste },
+  { name: "Valor Total Reajuste", selector: (row) => moneyFormatter(row.valor_total_reajuste )},
   //{ name: "Criado em", selector: (row) => row.created_at },
  // { name: "Atualizado em", selector: (row) => row.updated_at },
   
@@ -137,7 +139,7 @@ const columns: TableColumn<Obra>[] = [
   //{ name: "Data de Conclusão Real", selector: (row) => row.data_conclusao_real || "Não concluída" },
   { name: "Endereço", selector: (row) => row.endereco, sortable: true, },
  // { name: "Programa PPA", selector: (row) => row.programa_ppa },
-  {name: "Action",
+  {name: "Detalhes",
     cell:(row)=>(<button onClick={() =>
       window.open(`/controle-de-obras/construcao?${row?.id}`, '_blank')
                   }> Detalhes</button>)
@@ -149,6 +151,7 @@ export default function Obras() {
   const [data, setData] = useState<Obra[]>([]);
   const [search, setSearch] = useState<string>('');
   const [filter, setFilter] = useState<Obra[]>([]);
+  const [isHovered, setIsHovered] = useState(false);
   const paginationComponentOptions = {
     rowsPerPageText: 'Itens por página',
     rangeSeparatorText: 'de',
@@ -182,74 +185,42 @@ export default function Obras() {
     setFilter(result)
   },[search])
   
+  const csvHeaders = [
+    { label: "Título", key: "titulo" },
+    { label: "Situação", key: "situacao" },
+    { label: "Status", key: "status" },
+    { label: "Categoria", key: "categoria" },
+    { label: "Contrato", key: "numero_contrato" },
+    { label: "Órgão Responsável", key: "orgao_responsavel" },
+    { label: "Valor Total Medição", key: "valor_total_medicao" },
+    { label: "Valor Total Aditamento", key: "valor_total_aditamento" },
+    { label: "Valor Total Reajuste", key: "valor_total_reajuste" },
+    { label: "Início", key: "inicio_ate" },
+    { label: "Conclusão", key: "conclusao_ate" },
+    { label: "CNPJ", key: "cnpj" },
+    { label: "Número do Processo", key: "numero_processo" },
+    { label: "Endereço", key: "endereco" },
+  ];
 
+  const exportToXLS = (data: unknown[]) => {
+    const worksheet = XLSX.utils.json_to_sheet(data); // Converte os dados para formato Excel
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Dados");
+  
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+  
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(blob, "dados.xlsx");
+  };
 
   return (
     <>
     <Box pl='20px'>
       <h1 >Lista de Obras</h1>
-      <DataTable 
       
-      columns={columns} 
-      data={filter} 
-      pagination 
-      paginationComponentOptions={paginationComponentOptions}
-      customStyles={{
-        pagination: {
-          style: {
-            justifyContent: 'flex-start', // Alinha a paginação à esquerda
-            padding: '10px',
-          }
-        }
-      }}
-      
-      fixedHeader
-      selectableRowsHighlight
-      highlightOnHover
-      striped
-      
-      
-      subHeader
-      //="center" 
-        subHeaderComponent={
-          <div style={{ display: "flex", justifyContent: "flex-start", width: "100%" }}>
-  <input 
-    type="text" 
-    className="w-30 form-control"
-    placeholder="Busca..."
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-    style={{
-      borderRadius: "15px", // Borda arredondada
-      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Sombra suave
-      border: "1px solid #ccc", // Contorno leve
-      padding: "8px", // Espaçamento interno
-      textAlign: "left", // Alinha o texto à esquerda dentro do input
-    }}
-  />
-   
-              <button 
-                style={{
-                  backgroundColor: 'green',
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 20px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s',
-                  marginLeft: '20px'
-                }}
-              >
-                Exportar CSV
-              </button>
-              
-           
-</div>
-
-          
-        }
-        
-        
-      />
       </Box>
     </>
   );

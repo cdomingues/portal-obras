@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import moneyFormatter from "../../utils/moneyFormatter";
 import { Box, Text } from "@chakra-ui/react";
-import inversion from '../../assets/images/indicadores/inversion.svg';
-import dinheiro from '../../assets/images/iconos/dinero.svg';
-import percentual from '../../assets/images/indicadores/finalizadas.svg';
+import inversion from '../../assets/images/icones/parede-de-tijolos.png';
+import dinheiro from '../../assets/images/icones/moedas.png';
+import percentual from '../../assets/images/icones/grafico-de-pizza.png';
 import loading_bar from '../../assets/images/loader.gif'
 
 type ValorExecutado = {
@@ -116,7 +116,7 @@ const Painel = () => {
   useEffect(() => {
     if (data2.length > 0) {
       const obrasFiltradas = data2.filter(
-        (item) => item.tipo === "Tipo:OBRA" && item.status !== "07 - OBRA RESCINDIDA"
+        (item) => item.tipo === "Tipo:OBRA" && item.status !== "07 - OBRA RESCINDIDA" 
       );
       const totalObras = obrasFiltradas.length;
       const totalObrasAndamento = obrasFiltradas.filter((item) =>
@@ -126,7 +126,7 @@ const Painel = () => {
         item.status.includes("06 - OBRA CONCLUIDA")
       ).length;
       const totalInvestido = obrasFiltradas.reduce((acc, item) => {
-        const valor = parseFloat(item.valor_contrato);
+        const valor = item.valor_total_aditamento_reajuste_contrato;
         return isNaN(valor) ? acc : acc + valor;
       }, 0);
 
@@ -179,7 +179,7 @@ const Painel = () => {
   }, [data2]);
 
   if (loading) {
-    return <Box  pt='20px' width='100%' display='flex' justifyContent='center'><img src={loading_bar} alt="" /></Box>;
+    return <Box  pt='20px' width='90%' display='flex' justifyContent='center'><img src={loading_bar} alt="" /></Box>;
   }
 
   if (error) {
@@ -187,46 +187,53 @@ const Painel = () => {
   }
 
   return (
-    <Box p="20px" m="30px" display="flex" justifyContent="space-around" borderRadius="20px" backgroundColor="lightgrey">
+    <>
+    <Box  marginX='40px' mt="30px" display="flex" justifyContent="space-around" borderRadius="20px" backgroundColor="lightgrey" maxWidth='100%' mb='20px'  boxShadow="0px 4px 10px rgba(0, 0, 0, 0.2)"
+    sx={{
+      "@media (max-width: 900px)": {
+        display:'none',
+      },
+    }}
+    >
        
-       <Box style={{ width: "350px" }} display="flex" justifyContent="space-between" alignItems="center" padding="10px">
+       <Box  style={{ width: "350px" }} display="flex" justifyContent="space-between" alignItems="center"  >
         <Box flex="0 0 auto" marginRight="10px">
-          <img src={dinheiro} alt="Investimento" width="120" height="120" />
+          <img src={dinheiro} alt="Investimento" width="100px" height="100px" />
         </Box>
-        <Box display="flex" flexDirection="column" alignItems="flex-start">
-          <Text fontSize="20px" fontWeight="bold">Total Investido:</Text>
-          <Text fontSize="25px" fontWeight="bold">
+        <Box  flexDirection="column" alignItems="center" >
+          <Text fontSize="25px" fontWeight="bold" textAlign='center'>Total Investimento</Text>
+          <Text fontSize="30px" fontWeight="bold" textAlign="center">
           {moneyFormatt(currentTotalInvestido)}
           </Text>
         </Box>
       </Box>
       
-      <Box style={{ width: "350px" }} display="flex" justifyContent="space-between" alignItems="center" padding="20px">
+      <Box style={{ width: "350px" }} display="flex" justifyContent="space-between" alignItems="center" >
         <Box flex="0 0 auto" marginRight="20px">
-          <img src={inversion} width="140" height="140" />
+          <img src={inversion} width="100" height="100" />
         </Box>
-        <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
+        <Box  flexDirection="column" alignContent='center'   >
           <Box marginBottom="10px">
-            <Text fontSize="20px" fontWeight="bold">Total de Obras:</Text>
+            <Text fontSize="25px" fontWeight="bold" >Total de Obras</Text>
           </Box>
           <Box>
-            <Text fontSize="30px" fontWeight="bold">
+            <Text fontSize="30px" fontWeight="bold" textAlign="center" >
               {currentTotalObras.toFixed(0)}
             </Text>
           </Box>
         </Box>
       </Box>
 
-      <Box style={{ width: "350px" }} display="flex" justifyContent="space-between" alignItems="center" padding="20px">
+      <Box style={{ width: "400px" }} display="flex" justifyContent="space-between" alignItems="center" >
         <Box flex="0 0 auto" marginRight="20px">
-          <img src={percentual} width="160" height="160" />
+          <img src={percentual} width="100" height="100" />
         </Box>
-        <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
+        <Box  flexDirection="column" alignContent='center'   >
           <Box marginBottom="10px">
-            <Text fontSize="20px" fontWeight="bold">Obras Concluídas:</Text>
+            <Text fontSize="25px" fontWeight="bold">Obras Concluídas</Text>
           </Box>
           <Box>
-            <Text fontSize="30px" fontWeight="bold">
+            <Text fontSize="30px" fontWeight="bold" textAlign="center">
            {currentPercentualConcluidas.toFixed(2)+  '%'}
             </Text>
             
@@ -235,6 +242,39 @@ const Painel = () => {
       </Box>
     
     </Box>
+{/* Painel versão mobile */}
+
+<Box p="20px" m="30px" display="flex" flexDirection="column" alignItems="center" borderRadius="20px" backgroundColor="lightgrey" 
+sx={{
+  "@media (min-width: 901px)": {
+    display: "none", // Esconde quando a tela for maior que o mobile
+  },
+}}
+>
+  <Box style={{ width: "100%", maxWidth: "350px" }} display="flex" flexDirection="column" alignItems="center" padding="10px" textAlign="center">
+    <Box marginBottom="10px">
+      <img src={dinheiro} alt="Investimento" width="120" height="120" />
+    </Box>
+    <Text fontSize="20px" fontWeight="bold">Total Investimento</Text>
+    <Text fontSize="25px" fontWeight="bold">{moneyFormatt(currentTotalInvestido)}</Text>
+  </Box>
+
+  <Box style={{ width: "100%", maxWidth: "350px" }} display="flex" flexDirection="column" alignItems="center" padding="20px" textAlign="center">
+    <Box marginBottom="10px">
+      <img src={inversion} width="140" height="140" />
+    </Box>
+    <Text fontSize="20px" fontWeight="bold">Total de Obras</Text>
+    <Text fontSize="30px" fontWeight="bold">{currentTotalObras.toFixed(0)}</Text>
+  </Box>
+
+  <Box style={{ width: "100%", maxWidth: "350px" }} display="flex" flexDirection="column" alignItems="center" padding="20px" textAlign="center">
+    <Box marginBottom="10px">
+      <img src={percentual} width="160" height="160" />
+    </Box>
+    <Text fontSize="20px" fontWeight="bold">Obras Concluídas</Text>
+    <Text fontSize="30px" fontWeight="bold">{currentPercentualConcluidas.toFixed(2) + '%'}</Text>
+  </Box>
+</Box></>
   );
 };
 

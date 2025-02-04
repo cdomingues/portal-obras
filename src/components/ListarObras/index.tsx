@@ -1,4 +1,11 @@
+import { Box, Button, HStack, Image, VStack, Text, Tooltip,Link, Card, CardBody, Stack, Heading, Divider, CardFooter, ButtonGroup } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
+import not_found from '../../assets/images/not-found.jpg';
+import { bairros } from "../../utils/bairros";
+import {categoriaIcones} from '../../utils/categorias'
+
+import { useNavigate } from "react-router-dom";
+//import { Link } from "react-router-dom";
 
 type ValorExecutado = {
   id: string;
@@ -15,6 +22,7 @@ type ValorExecutado = {
 };
 
 type ObraApiResponse = {
+  thumbnail: string | undefined;
   id: string;
   situacao: string;
   status: string;
@@ -76,6 +84,14 @@ const Obras = () => {
   const [data2, setData2] = useState<ObraApiResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  
+  
+  
+  
+
+
+
 
   useEffect(() => {
     const fetchObras = async () => {
@@ -111,92 +127,211 @@ const Obras = () => {
   const obrasFiltradas = data2.filter(
     (item) => item.tipo === "Tipo:OBRA" && item.status !== "07 - OBRA RESCINDIDA"
   );
-  const totalObras = obrasFiltradas.length;
-  const totalObrasAndamento = obrasFiltradas.filter((item) =>
-    item.status.includes("05 - EM EXECUÇÃO")
-  ).length;
-  const totalObrasConcluidas = obrasFiltradas.filter((item) =>
-    item.status.includes("06 - OBRA CONCLUIDA")
-  ).length;
 
-  //const program = item?.categoria;
-
-  const programConfigTranslator: any = {
-
-  "	Categoria: ÁGUA/ESGOTO": {
-    backgroundColor: "#87C13F",
-    imageBackgroundColor: "#7DA83C",
-    imageName: "saneamento",
-  },
-  "Categoria: VIAS E LOGRADOUROS": {
-    backgroundColor: "#7F3F93",
-    imageBackgroundColor: "#713A80",
-    imageName: "infraestrutura",
-  },
-  "5365203c-6e94-42b9-b0de-e04ce713c742": {
-    backgroundColor: "#FF588A",
-    imageBackgroundColor: "#CD507D",
-    imageName: "mogi-eficiente",
-  },
-  "Categoria: UNIDADES DE EDUCAÇÃO": {
-    backgroundColor: "#008C57",
-    imageBackgroundColor: "#087D4D",
-    imageName: "educa-mogi",
-  },
-  "2db3ac4b-97c1-4342-a59b-8283f227524b": {
-    backgroundColor: "#F8C336",
-    imageBackgroundColor: "#DBAE2F",
-    imageName: "primeiros-passos",
-  },
-  "	Categoria: PARQUES E PRAÇAS": {
-    backgroundColor: "#22BFBD",
-    imageBackgroundColor: "#31A4A4",
-    imageName: "cidade-inteligente",
-  },
-  "2afecc1c-084f-4c05-824c-e4b58071c8a1": {
-    backgroundColor: "#1C3C6E",
-    imageBackgroundColor: "#183560",
-    imageName: "seguranca",
-  },
-  "Categoria: MOBILIDADE URBANA": {
-    backgroundColor: "#F88B2A",
-    imageBackgroundColor: "#D67B28",
-    imageName: "mobilidade-urbana",
-  },
-  "f8d4a8b6-389e-4ce4-96ac-79ae9079f4ad": {
-    backgroundColor: "#DD4134",
-    imageBackgroundColor: "#DD4134",
-    imageName: "esporte",
-  },
-  "Categoria: UNIDADE DE SAÚDE": {
-    backgroundColor: "#0093D3",
-    imageBackgroundColor: "#0E83BB",
-    imageName: "saude",
-  },
-};
-/* const programConfig = programConfigTranslator[program] || {
-  backgroundColor: "#7F3F93",
-  imageBackgroundColor: "#713A80",
-  imageName: "not-found"
-}; */
+  
+  
+  
 
   return (
+    
     <div>
-      <h2>Lista de Prestação de Contas</h2>
-      <p><strong>Total de Obras:</strong> {totalObras}</p>
-      <p><strong>Obras em Andamento:</strong> {totalObrasAndamento}</p>
-      <p><strong>Obras Concluídas:</strong> {totalObrasConcluidas}</p>
+      <Box width="90%" display="flex" flexWrap="wrap" justifyContent="space-between" mx='60px' pt='20px' >
+  {categoriaIcones.map((row) => (
+    
+    <Box 
+    key={row.icone} 
+    style={{ textAlign: "center", width: "120px" }} 
+    _hover={{ border: `2px solid ${categoriaIcones.find((item) => item.categoria === row.categoria)?.cor || "transparent"}` }}
+    p='18px' 
+    borderRadius='15px'
+    position='relative'
+    //transition="border 0.3s ease-in-out"
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      minWidth: "100px",
+      maxWidth: "120px",
+      mx: "auto", // Centraliza os itens
+      "@media (max-width: 600px)": {
+        width: "90px",
+        p: "15px",
+      },
+    }}
+   
+    
+    >
+      <img src={row.icone} width="90%" alt={row.categoria} />
+      <Text  fontWeight="bold" style={{ marginTop: "8px", fontSize: "14px" }}>{(row.categoria).split(':')[1]}</Text>
+    </Box>
+  ))}
+</Box>
       <ul>
         {obrasFiltradas.map((item) => (
-          <li key={item.id}>
-            <strong>Contrato:</strong> {item.numero_contrato}
-            <br />
-            <strong>Nome da Obra:</strong> {item.nome_da_obra}
-            <br />
-            <strong>Descrição:</strong> {item.descricao_da_obra}
-            <br />
-            <br />
-          </li>
+          
+         
+         <>
+        
+         <Box
+            border={categoriaIcones.find((row) => row.categoria === item.categoria)
+              ? `2px solid ${categoriaIcones.find((row) => row.categoria === item.categoria)?.cor}`
+              : "2px solid transparent"}
+
+            key={item.id}
+            width="98%"
+            height="250px"
+            borderRadius="12px"
+            mb="20px"
+            display="flex"
+            flexDirection="row"
+            position="relative" // Permite posicionar elementos internos de forma absoluta
+            bgColor='white'
+            boxShadow="0px 4px 10px rgba(0, 0, 0, 0.2)"
+            onClick={() => window.location.href = `https://www.exemplo.com/pagina-destino/${item.categoria}`}
+            
+            cursor='pointer'
+            sx={{
+              "@media (max-width: 900px)": {
+                display: 'none',
+              },
+            }}
+
+          >
+            {/* Ícone da Categoria no canto superior direito */}
+            {categoriaIcones.map((row) => {
+              if (row.categoria === item.categoria) {
+                return (
+                  <Box
+                    key={row.categoria}
+                    position="absolute"
+                    top="10px"
+                    right="10px"
+                    display="flex"
+                    alignItems="center"
+
+                  >
+                    <Tooltip label={item.categoria.split(":")[1]?.trim()} hasArrow bg="gray.700">
+                      <Image src={row.icone} alt={row.categoria} boxSize="80px" />
+                    </Tooltip>
+                  </Box>
+                );
+              }
+              return null;
+            })}
+
+            {/* Coluna da Imagem */}
+            <Box>
+              <Image
+                src={item.thumbnail ? item.thumbnail : not_found}
+                alt="Imagem da obra"
+                w="350px"
+                height="250px"
+                objectFit="fill"
+                borderRadius="12px" />
+            </Box>
+
+            {/* Coluna dos Dados */}
+            <VStack spacing="0px" align="start" width="90%" fontSize="14px" fontFamily="sans-serif" ml="18px" mr="10px"
+
+            >
+              <VStack display="flex" flexDirection="row" pl="8px"
+
+
+              >
+                <Text fontWeight="bold" color="gray.800">CONTRATO: </Text> <Text>{item.numero_contrato}</Text>
+              </VStack>
+
+              <VStack display="flex" flexDirection="row" pl="8px">
+                <Text fontWeight="bold" color="gray.800">STATUS: </Text> <Text>{(item.status).split('-')[1]}</Text>
+              </VStack>
+
+              <VStack display="flex" flexDirection="row" pl="8px">
+                <Text fontWeight="bold" color="gray.800">TÍTULO: </Text> <Text>{item.titulo}</Text>
+              </VStack>
+
+              <VStack display="flex" flexDirection="row" pl="8px">
+                <Text fontWeight="bold" color="gray.800">EMPRESA CONTRATADA: </Text> <Text>{item.razao_social_contratada}</Text>
+              </VStack>
+
+              <VStack display="flex" flexDirection="row" pl="8px">
+                <Text fontWeight="bold" color="gray.800">BAIRRO: </Text>
+                <Text>{bairros.map(row => row.id === item?.bairro ? row.nome : null)}</Text>
+              </VStack>
+            </VStack>
+          </Box> 
+           {/**Display Mobile */}
+           <Box
+           width='90%'
+           border={categoriaIcones.find((row) => row.categoria === item.categoria)
+            ? `2px solid ${categoriaIcones.find((row) => row.categoria === item.categoria)?.cor}`
+            : "2px solid transparent"}
+            borderRadius='12px'
+            mb='8px'
+            onClick={() => window.location.href = `https://www.exemplo.com/pagina-destino/${item.categoria}`}
+            cursor='pointer'
+            sx={{
+              "@media (min-width: 901px)": {
+                display: "none", // Esconde quando a tela for maior que o mobile
+              },
+            }}
+           
+           >
+              
+            <Image
+                src={item.thumbnail ? item.thumbnail : not_found}
+                alt="Imagem da obra"
+                w="100%"
+                //height="250px"
+                objectFit="fill"
+                borderRadius="12px" />
+           <VStack spacing="0px" align="start" width="90%" fontSize="12px" fontFamily="sans-serif" ml="18px" mr="10px" 
+
+>
+  <VStack display="flex" flexDirection="row" pl="8px"
+
+
+  >
+    <Text fontWeight="bold" color="gray.800">CONTRATO: </Text> <Text>{item.numero_contrato}</Text>
+  </VStack>
+
+  <VStack display="flex" flexDirection="row" pl="8px">
+    <Text fontWeight="bold" color="gray.800">STATUS: </Text> <Text>{(item.status).split('-')[1]}</Text>
+  </VStack>
+
+  <VStack display="flex" flexDirection="row" pl="8px">
+    <Text fontWeight="bold" color="gray.800">TÍTULO: </Text> <Text>{item.titulo}</Text>
+  </VStack>
+
+  <VStack display="flex" flexDirection="row" pl="8px">
+    <Text fontWeight="bold" color="gray.800">EMPRESA CONTRATADA: </Text> <Text>{item.razao_social_contratada}</Text>
+  </VStack>
+
+  <VStack display="flex" flexDirection="row" pl="8px">
+    <Text fontWeight="bold" color="gray.800">BAIRRO: </Text>
+    <Text>{bairros.map(row => row.id === item?.bairro ? row.nome : null)}</Text>
+  </VStack>
+</VStack>
+{categoriaIcones.map((row) => {
+              if (row.categoria === item.categoria) {
+                return (
+                  <Box
+                    key={row.categoria}
+                   bottom="0"     
+                    alignSelf='center'
+                     >
+                   
+                      <Image src={row.icone} alt={row.categoria} boxSize="80px" />
+                    
+                  </Box>
+                );
+              }
+              return null;
+            })}
+           </Box>
+           
+            </>
+           
         ))}
       </ul>
     </div>

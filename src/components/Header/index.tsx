@@ -1,239 +1,126 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Flex,
-  Text,
-  Button,
-  Stack,
-  Icon,
-  Link,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  useColorModeValue,
-  useDisclosure,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  InputGroup,
-  Input,
-  InputRightElement,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  useColorMode,
-} from "@chakra-ui/react";
-import { BiChevronRight } from "react-icons/bi";
-import navItems, { NavItem } from "./navItems";
+import { HStack, Box, Flex,  Link, Image, VStack, useDisclosure,Collapse, Img  } from '@chakra-ui/react'; // Se você estiver usando o Chakra UI
+
+import brasao from '../../assets/images/brasao/Brasao_PMMC_Normal.png'
+
+import hmenu from '../../assets/images/iconos/burger-menu-svgrepo-com.svg'
 
 
-export default function Header() {
-  const [search, setSearch] = useState("");
-  const [searchs, setSearchs] = useState<Array<any>>([]);
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  return (
-    <Box width="100%">
+function Header() {
+  
+
+  const MobileMenu = () => {
+    const { isOpen, onToggle } = useDisclosure();
+    return(
+    <Flex  justify="space-between" px='10px' pt="10px"  w="100%" 
+    sx={{
+      "@media (min-width: 480px)": {
+        display: "none", // Esconde quando a tela for maior que o mobile
+      },
+    }}>
+      {/* Logo à esquerda */}
+     
+      <Image alt="logo" src={brasao} width="140px"  mr='10px' marginBottom='15px' />
+      {/* Botão de Menu Hambúrguer */}
+      <Box position="relative">
+      <Img 
+        pr='15px'
+        src={hmenu} 
+        width='50px'
+        onClick={onToggle} 
+        aria-label="Abrir menu"
+       
+      />
+  
       
-      <Flex
-        bg={useColorModeValue("white", "gray.800")}
-        color={useColorModeValue("gray.600", "white")}
-        minH={"60px"}
-        py={{ base: 2 }}
-        px={{ base: 4 }}
-         position="relative"
-        //borderStyle={"solid"}
-       // borderColor={useColorModeValue("gray.200", "gray.900")}
-       zIndex="10" 
+      <Collapse in={isOpen} >
+      <VStack spacing={4}
+            mt="10px"
+            w="100%"
+            justifyContent="center"
+            align="flex-end" // Alinha os links à direita
+            //bg="white"
+            position="absolute"
+            top="35%" // Coloca o conteúdo do menu abaixo do ícone
+            left="0"
+            right="0"
+            boxShadow="md"
+            p="10px" >
+          <Link href="https://www.mogidascruzes.sp.gov.br/" target="_blank" color="black" fontWeight="bold" textDecoration="none" fontSize="15px" mr='30px'  _hover={{
+          // color: "blue.300",
+            textDecoration: "none",
+            color: "lightgrey",
+          }}>
+            PREFEITURA
+          </Link>
+          <Link href="https://dadosabertos.mogidascruzes.sp.gov.br/" target="_blank" color="black" fontWeight="bold" textDecoration="none" fontSize="15px" mr='28px'  _hover={{
+          // color: "blue.300",
+            textDecoration: "none",
+            color: "lightgrey",
+          }}>
+            TRANSPARÊNCIA
+          </Link>
+        </VStack>
+      </Collapse></Box>
+    </Flex>)
+  }; 
+  
+  return ( 
+  <>
+  <MobileMenu  />
+    <Box bg="gray.800" color="white" px={6} py={3}>
+      {/* Menu principal */}
+      <Flex align="center" justify="space-between" pt='10px' pr='10px'  
+      sx={{
+              "@media (max-width: 767px)": {
+                display: "none", // Esconde no mobile
+              },
+            }}>
+        {/* Logo à esquerda */}
+        <Image alt="logo" src={brasao} width="140px"  marginBottom='15px'/>
+       
+
+        {/* Itens do menu principal alinhados à direita */}
         
-      >
-       <DesktopNav
-              onOpen={onOpen}
-              search={search}
-              setSearch={setSearch}
-              setSearchs={setSearchs}
-              searchs={searchs}
-            />
+          <HStack spacing={15} as="nav" pr='20px' 
+           
+        >
+          <Link href="https://www.mogidascruzes.sp.gov.br/"
+         
+          target='_blank'
+          color="black"
+          fontWeight="bold"
+          textDecoration="none"
+          fontFamily="'Poppins', sans-serif"
+          _hover={{
+          // color: "blue.300",
+            textDecoration: "none",
+            color: "lightgrey",
+          }}
+          transition="all 0.2s ease-in-out">
+            PREFEITURA
+          </Link> 
+         
+          <Link href="https://dadosabertos.mogidascruzes.sp.gov.br/" color="black" target='_blank'
+          fontWeight="bold"
+          textDecoration="none"
+          fontFamily="'Poppins', sans-serif"
+          _hover={{
+          // color: "blue.300",
+            textDecoration: "none",
+            color: "lightgrey",
+          }}
+          transition="all 0.2s ease-in-out">
+            TRANSPARÊNCIA
+          </Link>
+         
+        </HStack>
       </Flex>
-    </Box>
+
+      {/* Menu secundário abaixo */}
+      
+    </Box></>
   );
 }
 
-const DesktopNav = ({
- 
-}: {
-  setSearch: React.Dispatch<React.SetStateAction<string>>;
-  search: string;
-  setSearchs: React.Dispatch<React.SetStateAction<Array<any>>>;
-  searchs: Array<any>;
-  onOpen: any;
-}) => {
- // const { colorMode, toggleColorMode } = useColorMode();
-
-  const linkColor = useColorModeValue("gray.600", "gray.200");
-  const linkHoverColor = useColorModeValue("gray.800", "white");
-  const popoverContentBgColor = useColorModeValue("white", "gray.800");
-  //const router = useRouter();
-  //const accessibility = useFontSizeAccessibilityContext();
-  return (
-    <Stack
-    
-      top="0"
-      width={"100%"} // Ocupa toda a largura da tela
-      maxWidth={"100%"} // Largura máxima de 1280 pixels
-      height={"10vh"} // Ocupa toda a altura da tela
-      alignItems="center" // Centraliza os filhos verticalmente
-      justifyContent="revert-layer" // Centraliza os filhos horizontalmente
-      margin="0 auto" // Centraliza a Stack horizontalmente na tela
-      display="flex"
-       direction="row"
-       pl="20px"
-       
-      
-    >
-     {navItems.map((navItem) => {
-              const href = navItem.href;
-              const hasHref = navItem.href ? { href } : {};
-              return (
-                <Box key={navItem.label}>
-                  <Popover trigger={"hover"} placement={"bottom-start"}>
-                    <PopoverTrigger>
-                      <Link
-                        {...hasHref}
-                        target={href ? "_blank" : undefined}
-                        p={2}
-                       // fontSize={fonts.small}
-                        fontWeight={500}
-                        color={"grey"}
-                        textAlign="center"
-                        _hover={{
-                          textDecoration: "none",
-                          color: "black",
-                        }}
-                        
-                      >
-                        {navItem.label}
-                      </Link>
-                    </PopoverTrigger>
-
-                    {navItem.children && (
-                      <PopoverContent
-                        border={0}
-                        boxShadow={"xl"}
-                        bg="white"
-                        p={4}
-                        rounded={"xl"}
-                        minW={"sm"}
-                      >
-                        <Stack>
-                          {navItem.children.map((child, index) => {
-                            return (
-                              <Accordion
-                                defaultIndex={[1]}
-                                allowMultiple
-                                key={child.label}
-                              >
-                                <AccordionItem borderWidth={0}>
-                                  <AccordionButton padding={0}>
-                                    <Box width="100%" border="0">
-                                      <DesktopSubNav
-                                        key={child.label}
-                                        {...child}
-                                      />
-                                    </Box>
-                                  </AccordionButton>
-
-                                  <AccordionPanel pb={4}>
-                                    {child.children?.map((item) => (
-                                      <Box
-                                        key={item.label}
-                                        _hover={{
-                                          bg: "lightgrey",
-                                          cursor: "pointer",
-                                          border: 0,
-                                          
-                                        }}
-                                        padding="1.5"
-                                        borderRadius="5"
-                                        style={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                        }}
-                                        mb={1}
-                                        ml="3"
-                                        onClick={() => window.open(item.href)}
-                                      >
-                                        <Text
-                                          color="black"
-                                          fontWeight="500"
-                                        >
-                                          {item.label}
-                                        </Text>
-                                      </Box>
-                                    ))}
-                                  </AccordionPanel>
-                                </AccordionItem>
-                              </Accordion>
-                            );
-                          })}
-                        </Stack>
-                      </PopoverContent>
-                    )}
-                  </Popover>
-                </Box>
-              );
-            })}
-    </Stack>
-  );
-};
-
-
-  
-
-const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
-  const hasHref = href ? { href } : {};
-  //const accessibility = useFontSizeAccessibilityContext();
-  return (
-    <Link
-      {...hasHref}
-      role={"group"}
-      display={"block"}
-      p={2}
-      rounded={"md"}
-      target={href ? "_blank" : undefined}
-      _hover={{ bg: useColorModeValue("pink.50", "gray.900") }}
-      
-    >
-      <Stack direction={"row"} align={"center"}>
-        <Box>
-          <Text
-          color="grey"
-            transition={"all .3s ease"}
-            _groupHover={{ color: "black" }}
-            fontWeight={500}
-            //fontSize={accessibility?.fonts?.small}
-          >
-            {label}
-          </Text>
-          <Text >{subLabel}</Text>
-        </Box>
-        <Flex
-          transition={"all .3s ease"}
-          transform={"translateX(-10px)"}
-          opacity={0}
-          _groupHover={{ opacity: "100%", transform: "translateX(0)" }}
-          justify={"flex-end"}
-          align={"center"}
-          flex={1}
-        >
-          
-        </Flex>
-      </Stack>
-    </Link>
-  );
-};
+export default Header;
