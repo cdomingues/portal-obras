@@ -411,8 +411,8 @@ const handlePageClick = (data: {selected: number}) =>{
         nextLabel={"Próximo"}
         breakLabel={"..."}
         pageCount={totalPages}
-        marginPagesDisplayed={3}
-        pageRangeDisplayed={3}
+        marginPagesDisplayed={1}
+        pageRangeDisplayed={1}
         onPageChange={handlePageClick}
         containerClassName={"pagination"}
         activeClassName={"active"}
