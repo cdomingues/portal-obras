@@ -17,7 +17,7 @@ function Menu(){
         backgroundBlendMode="overlay"
         fontWeight="bold"
         fontSize="x-large"
-        maxWidth="1600px"
+        //maxWidth="1600px"
         borderRadius='7px'
         sx={{
               "@media (max-width: 767px)": {

@@ -1,10 +1,13 @@
-import { Box, Button, HStack, Image, VStack, Text, Tooltip,Link, Card, CardBody, Stack, Heading, Divider, CardFooter, ButtonGroup } from "@chakra-ui/react";
-import React, { useState, useEffect } from "react";
+import { Box, Button, HStack, Image, VStack, Text, Tooltip,IconButton } from "@chakra-ui/react";
+import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import not_found from '../../assets/images/not-found.jpg';
 import { bairros } from "../../utils/bairros";
 import {categoriaIcones} from '../../utils/categorias'
-
+import ReactPaginate from "react-paginate";
 import { useNavigate } from "react-router-dom";
+import '../../styles/pagination.css'
 //import { Link } from "react-router-dom";
 
 type ValorExecutado = {
@@ -85,14 +88,25 @@ const Obras = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1)
+  console.log(currentPage)
+  const ITEMS_PER_PAGE = 10;
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = 200;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+    
   
   
-  
-  
-
-
-
-
   useEffect(() => {
     const fetchObras = async () => {
       try {
@@ -128,51 +142,105 @@ const Obras = () => {
     (item) => item.tipo === "Tipo:OBRA" && item.status !== "07 - OBRA RESCINDIDA"
   );
 
-  
-  
-  
+const totalPages = Math.ceil(obrasFiltradas.length / ITEMS_PER_PAGE)  
+
+const paginatedObras = obrasFiltradas.slice(
+ ( currentPage -1) * ITEMS_PER_PAGE,
+ currentPage  * ITEMS_PER_PAGE
+);
+
+const handlePageClick = (data: {selected: number}) =>{
+  const newPage = Math.max(1, Math.min(data.selected +1, totalPages))
+  setCurrentPage(newPage)
+}
+
+
 
   return (
     
     <div>
-      <Box width="90%" display="flex" flexWrap="wrap" justifyContent="space-between" mx='60px' pt='20px' >
+      <Box
+  width="90%"
+  display="flex"
+  height='200px'
+  flexWrap="nowrap"
+  justifyContent="space-between"
+  mx="60px"
+  pt="20px"
+  overflowX="auto" // Permite rolagem horizontal se necessário
+  sx={{
+    "@media (max-width: 600px)": {
+      justifyContent: "flex-start", // Alinha os itens à esquerda
+      gap: "10px", // Espaçamento entre os itens
+      mx: "20px", // Reduz margens para telas menores
+      
+    },
+  }}
+>
+{/* <IconButton
+        aria-label="Scroll Right"
+        icon={<FaAngleLeft size='35px' />}
+        mt='50px'
+        position="absolute"
+        onClick={() => scroll("left")}
+        zIndex={2}
+        bg="whiteAlpha.800"
+        //boxShadow="md"
+        _hover={{ bg: "whiteAlpha.900" }}
+        display={{ base: "flex", md: "none" }}
+      /> */}
   {categoriaIcones.map((row) => (
-    
-    <Box 
-    key={row.icone} 
-    style={{ textAlign: "center", width: "120px" }} 
-    _hover={{ border: `2px solid ${categoriaIcones.find((item) => item.categoria === row.categoria)?.cor || "transparent"}` }}
-    p='18px' 
-    borderRadius='15px'
-    position='relative'
-    //transition="border 0.3s ease-in-out"
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      minWidth: "100px",
-      maxWidth: "120px",
-      mx: "auto", // Centraliza os itens
-      "@media (max-width: 600px)": {
-        width: "90px",
-        p: "15px",
-      },
-    }}
-   
-    
+    <Box
+      key={row.icone}
+      textAlign="center"
+      width="120px"
+      minWidth="100px"
+      maxWidth="120px"
+      _hover={{
+        border: `2px solid ${
+          categoriaIcones.find((item) => item.categoria === row.categoria)?.cor || "transparent"
+        }`,
+      }}
+      p="18px"
+      borderRadius="15px"
+      position="relative"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        mx: "auto",
+        "@media (max-width: 600px)": {
+          width: "150px",
+          minWidth: "100px",
+          p: "10px",
+        },
+      }}
     >
       <img src={row.icone} width="90%" alt={row.categoria} />
-      <Text  fontWeight="bold" style={{ marginTop: "8px", fontSize: "14px" }}>{(row.categoria).split(':')[1]}</Text>
+      <Text fontWeight="bold" mt="8px" fontSize="14px">
+        {row.categoria.split(":")[1]}
+      </Text>
     </Box>
-  ))}
+  ))} 
+  {/* <IconButton
+  aria-label="Scroll Right"
+  icon={<FaAngleRight  size='35px'/>}
+  mt='50px'
+  position="absolute"
+  right="50"
+  onClick={() => scroll("right")}
+  zIndex={2}
+  bg="whiteAlpha.800"
+  boxShadow="md"
+  _hover={{ bg: "whiteAlpha.900" }}
+  display={{ base: "flex" }}
+/> */}
 </Box>
+
       <ul>
-        {obrasFiltradas.map((item) => (
-          
-         
-         <>
-        
+        {paginatedObras.map((item) => (
+         <>        
          <Box
             border={categoriaIcones.find((row) => row.categoria === item.categoria)
               ? `2px solid ${categoriaIcones.find((row) => row.categoria === item.categoria)?.cor}`
@@ -317,11 +385,13 @@ const Obras = () => {
                 return (
                   <Box
                     key={row.categoria}
-                   bottom="0"     
-                    alignSelf='center'
+                   top="0"     
+                    textAlign='center'
+                    left='0'
+                    pb='5px'
                      >
                    
-                      <Image src={row.icone} alt={row.categoria} boxSize="80px" />
+                  <Text color={row.cor} fontSize='18px' fontWeight='bold'>   {(row.categoria).split(':')[1]} </Text>
                     
                   </Box>
                 );
@@ -334,7 +404,23 @@ const Obras = () => {
            
         ))}
       </ul>
+
+      
+      <ReactPaginate
+        previousLabel={"Anterior"}
+        nextLabel={"Próximo"}
+        breakLabel={"..."}
+        pageCount={totalPages}
+        marginPagesDisplayed={3}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageClick}
+        containerClassName={"pagination"}
+        activeClassName={"active"}
+        
+      />
+     
     </div>
+    
   );
 };
 

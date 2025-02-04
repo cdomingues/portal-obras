@@ -1,0 +1,28 @@
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 25px;
+    list-style: none; /* Remove os pontos de lista */
+  }
+  
+  .pagination a {
+    padding: 8px 15px;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 5px; /* Adiciona borda arredondada */
+    background-color: #f0f0f0;
+    transition: background-color 0.3s, color 0.3s; /* Transição suave */
+  }
+  
+  .pagination a:hover {
+    background-color: #393D6F;
+    color: white;
+  }
+  
+  .pagination .active {
+    font-weight: bold;
+    background-color: #007bff;
+   
+    border-radius: 5px;
+  }
