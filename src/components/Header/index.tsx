@@ -12,6 +12,7 @@ function Header() {
   const MobileMenu = () => {
     const { isOpen, onToggle } = useDisclosure();
     return(
+      
     <Flex  justify="space-between" px='10px' pt="10px"  w="100%" 
     sx={{
       "@media (min-width: 480px)": {
@@ -19,8 +20,8 @@ function Header() {
       },
     }}>
       {/* Logo à esquerda */}
-     
-      <Image alt="logo" src={brasao} width="140px"  mr='10px' marginBottom='15px' />
+   
+      <Image alt="logo" src={brasao} width="180px"  mr='10px' marginBottom='15px' />
       {/* Botão de Menu Hambúrguer */}
       <Box position="relative">
       <Img 
@@ -68,6 +69,7 @@ function Header() {
   return ( 
   <>
   <MobileMenu  />
+  <Box bgColor='black' height='25px'width='100%'></Box>
     <Box bg="gray.800" color="white" px={6} py={3}>
       {/* Menu principal */}
       <Flex align="center" justify="space-between" pt='10px' pr='10px'  
@@ -77,7 +79,8 @@ function Header() {
               },
             }}>
         {/* Logo à esquerda */}
-        <Image alt="logo" src={brasao} width="140px"  marginBottom='15px'/>
+       
+        <Image alt="logo" src={brasao} width="180px"  marginBottom='15px'/>
        
 
         {/* Itens do menu principal alinhados à direita */}

@@ -1,14 +1,14 @@
 
-import { Link, useLocation } from 'react-router-dom';
-import { Box, Button,  Text } from '@chakra-ui/react';
+//import { Link, useLocation } from 'react-router-dom';
+import { Box,   Text } from '@chakra-ui/react';
 import background from '../../assets/images/mogi03.jpeg'
 import Painel from '../../components/Painel';
 import Menu from '../../components/Menu';
-import { LuExternalLink } from "react-icons/lu"
+//import { LuExternalLink } from "react-icons/lu"
 
-import FiltroObras from '../../components/FiltroObras';
+//import FiltroObras from '../../components/FiltroObras';
 import Footer from '../../components/Footer';
-import Maps from '../../components/Maps';
+//import Maps from '../../components/Maps';
 
 function HomePage() {
 

@@ -1,18 +1,18 @@
-import { Box, Button, HStack, Image, VStack, Text, Tooltip,IconButton, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
-import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Box, Button,  Image, VStack, Text, Tooltip, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
+//import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
+//import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import React, { useState, useEffect } from "react";
 import not_found from '../../assets/images/not-found.jpg';
 import { bairros } from "../../utils/bairros";
 import {categoriaIcones} from '../../utils/categorias'
 import ReactPaginate from "react-paginate";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import '../../styles/pagination.css'
 import { FaSearch } from "react-icons/fa";
 import inversion from '../../assets/images/icones/parede-de-tijolos.png';
 import dinheiro from '../../assets/images/icones/moedas.png';
 import percentual from '../../assets/images/icones/grafico-de-pizza.png';
-import loading_bar from '../../assets/images/loader.gif'
+//import loading_bar from '../../assets/images/loader.gif'
 import moneyFormatter from "../../utils/moneyFormatter";
 import Papa from "papaparse";
 import * as XLSX from 'xlsx'
@@ -31,7 +31,7 @@ type ValorExecutado = {
   obra: string;
 };
 
-type ObraApiResponse = {
+export type ObraApiResponse = {
   thumbnail: string | undefined;
   id: string;
   situacao: string;
@@ -94,7 +94,7 @@ const Obras = () => {
   const [data2, setData2] = useState<ObraApiResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -105,7 +105,7 @@ const Obras = () => {
   console.log(currentPage)
   const ITEMS_PER_PAGE = 10;
 
-  const scrollRef = useRef<HTMLDivElement>(null);
+  /* const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -115,7 +115,7 @@ const Obras = () => {
         behavior: "smooth",
       });
     }
-  };
+  }; */
 
     
   
@@ -488,7 +488,7 @@ sx={{
             position="relative" // Permite posicionar elementos internos de forma absoluta
             bgColor='white'
             boxShadow="0px 4px 10px rgba(0, 0, 0, 0.2)"
-            onClick={() => window.location.href = `https://www.exemplo.com/pagina-destino/${item.categoria}`}
+            onClick={() => window.location.href = `/detalhes?${item.id}`}
             
             cursor='pointer'
             sx={{
@@ -569,7 +569,7 @@ sx={{
             : "2px solid transparent"}
             borderRadius='12px'
             mb='8px'
-            onClick={() => window.location.href = `https://www.exemplo.com/pagina-destino/${item.categoria}`}
+            onClick={() => window.location.href = `detalhes?${item.id}`}
             cursor='pointer'
             sx={{
               "@media (min-width: 901px)": {

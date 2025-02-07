@@ -6,7 +6,7 @@ import Menu from '../../components/Menu';
 function Mapa() {
     return (
       <>
-      
+      <Menu />
       
       <div  style={{backgroundColor: 'black', width: '100%', height: '1px'}} ></div>
       <Box alignItems='center' pt='20px'>

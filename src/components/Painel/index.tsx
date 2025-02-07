@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import moneyFormatter from "../../utils/moneyFormatter";
+import  { useState, useEffect } from "react";
+//import moneyFormatter from "../../utils/moneyFormatter";
 import { Box, Text } from "@chakra-ui/react";
 import inversion from '../../assets/images/icones/parede-de-tijolos.png';
 import dinheiro from '../../assets/images/icones/moedas.png';

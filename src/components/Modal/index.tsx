@@ -1,18 +1,12 @@
 // ModalPopup.tsx
 import React from "react";
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  Link,
+  
+  useDisclosure
 } from "@chakra-ui/react";
 
 const ModalPopup: React.FC = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {  onOpen } = useDisclosure();
 
   React.useEffect(() => {
     onOpen();

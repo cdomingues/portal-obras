@@ -87,7 +87,7 @@ const MapOutline: React.FC<MapOutlineProps> = ({ topojsonFile }) => {
           .attr("width", 30) // Largura do ícone
           .attr("height", 30) // Altura do ícone
           .html(activeIconHTML)
-          .on("mouseover", function (event, d) {
+          .on("mouseover", function (_event, d) {
             const projected = projection([d.longitude, d.latitude]);
             if (projected) {
               setActiveMarker({
