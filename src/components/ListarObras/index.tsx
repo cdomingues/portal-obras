@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Image, VStack, Text, Tooltip,IconButton } from "@chakra-ui/react";
+import { Box, Button, HStack, Image, VStack, Text, Tooltip,IconButton, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import React, { useState, useEffect, useCallback, useRef } from "react";
@@ -8,7 +8,14 @@ import {categoriaIcones} from '../../utils/categorias'
 import ReactPaginate from "react-paginate";
 import { useNavigate } from "react-router-dom";
 import '../../styles/pagination.css'
-//import { Link } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
+import inversion from '../../assets/images/icones/parede-de-tijolos.png';
+import dinheiro from '../../assets/images/icones/moedas.png';
+import percentual from '../../assets/images/icones/grafico-de-pizza.png';
+import loading_bar from '../../assets/images/loader.gif'
+import moneyFormatter from "../../utils/moneyFormatter";
+import Papa from "papaparse";
+import * as XLSX from 'xlsx'
 
 type ValorExecutado = {
   id: string;
@@ -89,6 +96,12 @@ const Obras = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  
+  
+  
   console.log(currentPage)
   const ITEMS_PER_PAGE = 10;
 
@@ -138,27 +151,195 @@ const Obras = () => {
     return <p>{error}</p>;
   }
 
+  const safeSearchTerm = searchTerm ? searchTerm.toLowerCase() : "";
+
+  const handleFilter = (category: React.SetStateAction<string | null>) => {
+    if (selectedCategory === category) {
+      // Remove o filtro caso o mesmo ícone seja clicado novamente
+      setSelectedCategory(null);
+    } else {
+      // Aplica o filtro
+      setSelectedCategory(category);
+    }
+  };
+
   const obrasFiltradas = data2.filter(
-    (item) => item.tipo === "Tipo:OBRA" && item.status !== "07 - OBRA RESCINDIDA"
+    (item) => 
+      item.tipo === "Tipo:OBRA" && 
+      item.status !== "07 - OBRA RESCINDIDA" &&
+      item.titulo.toLocaleLowerCase().includes(safeSearchTerm)  &&
+      (!selectedCategory || item.categoria === selectedCategory)
   );
 
 const totalPages = Math.ceil(obrasFiltradas.length / ITEMS_PER_PAGE)  
 
-const paginatedObras = obrasFiltradas.slice(
+const filteredObras = obrasFiltradas.filter((obra)=>
+  obra.titulo.toLowerCase().includes(searchTerm.toLowerCase()))
+
+const paginatedObras = filteredObras.slice(
  ( currentPage -1) * ITEMS_PER_PAGE,
  currentPage  * ITEMS_PER_PAGE
 );
+
+const totalObras = obrasFiltradas.length;
+
+const totalObrasAndamento = obrasFiltradas.filter((item) =>
+  item.status.includes("05 - EM EXECUÇÃO")
+).length;
+const totalObrasConcluidas = obrasFiltradas.filter((item) =>
+  item.status.includes("06 - OBRA CONCLUIDA")
+).length;
+const totalInvestido = obrasFiltradas.reduce((acc, item) => {
+  const valor = item.valor_total_aditamento_reajuste_contrato;
+  return isNaN(valor) ? acc : acc + valor;
+}, 0);
+
+const percentualConcluidas =
+  (totalObrasConcluidas / (totalObrasAndamento + totalObrasConcluidas)) * 100;
 
 const handlePageClick = (data: {selected: number}) =>{
   const newPage = Math.max(1, Math.min(data.selected +1, totalPages))
   setCurrentPage(newPage)
 }
 
+// Função para converter os dados para CSV e fazer o download
+const exportToCSV = (data: unknown[] | Papa.UnparseObject<unknown>) => {
+  const csv = Papa.unparse(data);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+
+  link.setAttribute("href", url);
+  link.setAttribute("download", "obras_filtradas.csv");
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+// Função para exportar os dados para XLSX
+
+const exportToXLSX = (data: unknown[])=>{
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws, "Obras")
+
+  XLSX.writeFile(wb, "obras.xlsx")
+}
+
+// Função para exportar os dados para JSON
+const exportToJSON = (data: any) => {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+
+  link.setAttribute("href", url);
+  link.setAttribute("download", "obras_filtradas.json");
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 
   return (
     
     <div>
+
+
+<>
+    <Box  marginX='40px' mt="30px" display="flex" justifyContent="space-around" borderRadius="20px" backgroundColor="lightgrey" maxWidth='100%' mb='20px'  boxShadow="0px 4px 10px rgba(0, 0, 0, 0.2)"
+    sx={{
+      "@media (max-width: 900px)": {
+        display:'none',
+      },
+    }}
+    >
+       
+       <Box  style={{ width: "350px" }} display="flex" justifyContent="space-between" alignItems="center"  >
+        <Box flex="0 0 auto" marginRight="10px">
+          <img src={dinheiro} alt="Investimento" width="100px" height="100px" />
+        </Box>
+        <Box  flexDirection="column" alignItems="center" >
+          <Text fontSize="25px" fontWeight="bold" textAlign='center'>Total Investimento</Text>
+          <Text fontSize="30px" fontWeight="bold" textAlign="center">
+          {moneyFormatter(totalInvestido)}
+          </Text>
+        </Box>
+      </Box>
+      
+      <Box style={{ width: "350px" }} display="flex" justifyContent="space-between" alignItems="center" >
+        <Box flex="0 0 auto" marginRight="20px">
+          <img src={inversion} width="100" height="100" />
+        </Box>
+        <Box  flexDirection="column" alignContent='center'   >
+          <Box marginBottom="10px">
+            <Text fontSize="25px" fontWeight="bold" >Total de Obras</Text>
+          </Box>
+          <Box>
+            <Text fontSize="30px" fontWeight="bold" textAlign="center" >
+              {totalObras.toFixed(0)}
+            </Text>
+          </Box>
+        </Box>
+      </Box>
+
+      <Box style={{ width: "400px" }} display="flex" justifyContent="space-between" alignItems="center" >
+        <Box flex="0 0 auto" marginRight="20px">
+          <img src={percentual} width="100" height="100" />
+        </Box>
+        <Box  flexDirection="column" alignContent='center'   >
+          <Box marginBottom="10px">
+            <Text fontSize="25px" fontWeight="bold">Obras Concluídas</Text>
+          </Box>
+          <Box>
+            <Text fontSize="30px" fontWeight="bold" textAlign="center">
+           {percentualConcluidas.toFixed(2)+  '%'}
+            </Text>
+            
+          </Box>
+        </Box>
+      </Box>
+    
+    </Box>
+{/* Painel versão mobile */}
+
+<Box p="20px" m="30px" display="flex" flexDirection="column" alignItems="center" borderRadius="20px" backgroundColor="lightgrey" 
+sx={{
+  "@media (min-width: 901px)": {
+    display: "none", // Esconde quando a tela for maior que o mobile
+  },
+}}
+>
+  <Box style={{ width: "100%", maxWidth: "350px" }} display="flex" flexDirection="column" alignItems="center" padding="10px" textAlign="center">
+    <Box marginBottom="10px">
+      <img src={dinheiro} alt="Investimento" width="120" height="120" />
+    </Box>
+    <Text fontSize="20px" fontWeight="bold">Total Investimento</Text>
+    <Text fontSize="25px" fontWeight="bold">{moneyFormatter(totalInvestido)}</Text>
+  </Box>
+
+  <Box style={{ width: "100%", maxWidth: "350px" }} display="flex" flexDirection="column" alignItems="center" padding="20px" textAlign="center">
+    <Box marginBottom="10px">
+      <img src={inversion} width="140" height="140" />
+    </Box>
+    <Text fontSize="20px" fontWeight="bold">Total de Obras</Text>
+    <Text fontSize="30px" fontWeight="bold">{totalObras.toFixed(0)}</Text>
+  </Box>
+
+  <Box style={{ width: "100%", maxWidth: "350px" }} display="flex" flexDirection="column" alignItems="center" padding="20px" textAlign="center">
+    <Box marginBottom="10px">
+      <img src={percentual} width="160" height="160" />
+    </Box>
+    <Text fontSize="20px" fontWeight="bold">Obras Concluídas</Text>
+    <Text fontSize="30px" fontWeight="bold">{percentualConcluidas.toFixed(2) + '%'}</Text>
+  </Box>
+</Box></>
+
+
+
+
+      
       <Box
   width="90%"
   display="flex"
@@ -192,10 +373,12 @@ const handlePageClick = (data: {selected: number}) =>{
   {categoriaIcones.map((row) => (
     <Box
       key={row.icone}
+      
       textAlign="center"
       width="120px"
       minWidth="100px"
       maxWidth="120px"
+      onClick={()=>handleFilter(row.categoria)}
       _hover={{
         border: `2px solid ${
           categoriaIcones.find((item) => item.categoria === row.categoria)?.cor || "transparent"
@@ -210,6 +393,9 @@ const handlePageClick = (data: {selected: number}) =>{
         alignItems: "center",
         justifyContent: "center",
         mx: "auto",
+        cursor: "pointer",
+        background: selectedCategory === row.categoria ? "#ddd" : '',
+        opacity: selectedCategory && selectedCategory !== row.categoria ? 0.4 : 1, // Opacidade para os ícones não selecionados
         "@media (max-width: 600px)": {
           width: "150px",
           minWidth: "100px",
@@ -237,6 +423,52 @@ const handlePageClick = (data: {selected: number}) =>{
   display={{ base: "flex" }}
 /> */}
 </Box>
+
+
+<InputGroup mt='10px' ml="40px" width="300px">
+      <Input
+        type="text"
+        placeholder="Buscar por título da obra ..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        borderRadius="8px"
+        height="30px"
+        pr="40px" // Adiciona espaço para o ícone à direita
+        width='100%'
+      />
+      <InputRightElement height='100%' display='flex' pr='10px' >
+        <FaSearch color="gray" />
+      </InputRightElement>
+    </InputGroup>
+    <Box pl='40px' pt='20p' justifyContent='space-around' mt='15px' fontSize='40px'>
+
+    <Button border='0' cursor='pointer'  fontSize='20px'  textColor='white' 
+    bgColor='#4CAF50' 
+    _hover={{
+    bgColor: "#078d0c",  // Cor de fundo ao passar o mouse
+  }}
+   height='40px' borderRadius='8px' mr='15px'  onClick={() => exportToCSV(obrasFiltradas)}
+   transition='background-color 0.3s ease'
+   boxShadow="0px 4px 10px rgba(0, 0, 0, 0.2)"
+   >CSV</Button>
+
+    <Button  border='0' cursor='pointer' fontSize='20px'textColor='white' 
+    bgColor='#FF9800' 
+    _hover={{
+      bgColor: "#977505",  // Cor de fundo ao passar o mouse
+    }}
+    height='40px' borderRadius='8px' mr='15px'onClick={() => exportToXLSX(obrasFiltradas)}
+    boxShadow="0px 4px 10px rgba(0, 0, 0, 0.2)"
+    >XLSX</Button>
+    <Button  border='0' cursor='pointer' fontSize='20px' textColor='white' 
+    bgColor='#F44336' 
+    _hover={{
+      bgColor: "#D32F2F",  // Cor de fundo ao passar o mouse
+    }}
+    height='40px' borderRadius='8px' mr='15px'onClick={() => exportToJSON(obrasFiltradas)}
+    boxShadow="0px 4px 10px rgba(0, 0, 0, 0.2)"
+    >JSON</Button>
+    </Box>
 
       <ul>
         {paginatedObras.map((item) => (
@@ -266,6 +498,7 @@ const handlePageClick = (data: {selected: number}) =>{
             }}
 
           >
+            
             {/* Ícone da Categoria no canto superior direito */}
             {categoriaIcones.map((row) => {
               if (row.categoria === item.categoria) {

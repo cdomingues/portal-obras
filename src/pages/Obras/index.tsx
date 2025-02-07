@@ -7,7 +7,7 @@ function ListarObras() {
       <>   
      
      <Menu />
-      <Painel />
+     
        <Obras /> 
        <Footer />
        </>
