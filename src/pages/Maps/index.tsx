@@ -1,6 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import MapOutline from "../../components/Maps";
 import Menu from '../../components/Menu';
+import Footer from "../../components/Footer";
 
 
 function Mapa() {
@@ -9,9 +10,11 @@ function Mapa() {
       <Menu />
       
       <div  style={{backgroundColor: 'black', width: '100%', height: '1px'}} ></div>
-      <Box alignItems='center' pt='20px'>
+      <Box >
       <MapOutline topojsonFile={"/abairramento.json"} />
+     
       </Box>
+      <Footer/>
       </>
     );
   }

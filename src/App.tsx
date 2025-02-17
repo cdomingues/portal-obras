@@ -7,6 +7,7 @@ import Maps from '../src/pages/Maps';
 import Obras from '../src/pages/Obras';
 import Header from "./components/Header";
 import Detalhes from "./pages/ObraDetalhes";
+import Teste from './pages/Teste';
 
 
 
@@ -24,6 +25,8 @@ function App()
         <Route path="/maps" element={<Maps />} /> 
         <Route path="/obras" element={<Obras />} /> 
         <Route path='/detalhes' element={<Detalhes/>}/>
+        <Route path='/teste' element={<Teste/>}/>
+
       
       </Routes>
     </Router></>

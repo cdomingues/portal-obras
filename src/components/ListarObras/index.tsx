@@ -425,49 +425,94 @@ sx={{
 </Box>
 
 
-<InputGroup mt='10px' ml="40px" width="300px">
+
+    <Box  pt='20p' display='flex' flexDirection='row' mt='15px' fontSize='40px' justifyContent='space-between' mr='20px'
+    sx={{
+      "@media (max-width: 900px)": {
+        flexDir: 'column'
+      },
+    }}
+    >
+
+    <InputGroup mt='10px' ml="40px" width="40%"
+     sx={{
+      "@media (max-width: 900px)": {
+        width: '80%'
+      },
+    }}>
       <Input
         type="text"
         placeholder="Buscar por título da obra ..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         borderRadius="8px"
-        height="30px"
+        height="40px"
         pr="40px" // Adiciona espaço para o ícone à direita
         width='100%'
       />
       <InputRightElement height='100%' display='flex' pr='10px' >
         <FaSearch color="gray" />
       </InputRightElement>
-    </InputGroup>
-    <Box pl='40px' pt='20p' justifyContent='space-around' mt='15px' fontSize='40px'>
-
-    <Button border='0' cursor='pointer'  fontSize='20px'  textColor='white' 
+      
+    </InputGroup>  
+    <Box
+   // width='80%'
+   // border='1px solid black'
+    //
+     sx={{
+      "@media (max-width: 900px)": {
+       justifyContent: 'space-between',
+       ml:'40px'
+      },
+    }}
+   
+    >
+    <Button 
+    width='150px'
+    border='0' cursor='pointer'  fontSize='20px'  textColor='white' 
     bgColor='#4CAF50' 
     _hover={{
     bgColor: "#078d0c",  // Cor de fundo ao passar o mouse
+    
   }}
    height='40px' borderRadius='8px' mr='15px'  onClick={() => exportToCSV(obrasFiltradas)}
    transition='background-color 0.3s ease'
    boxShadow="0px 4px 10px rgba(0, 0, 0, 0.2)"
+   sx={{
+    "@media (max-width: 900px)": {
+      width: '27%'
+    },
+  }}
    >CSV</Button>
 
-    <Button  border='0' cursor='pointer' fontSize='20px'textColor='white' 
+    <Button  width='150px'border='0' cursor='pointer' fontSize='20px'textColor='white' 
     bgColor='#FF9800' 
     _hover={{
       bgColor: "#977505",  // Cor de fundo ao passar o mouse
     }}
     height='40px' borderRadius='8px' mr='15px'onClick={() => exportToXLSX(obrasFiltradas)}
     boxShadow="0px 4px 10px rgba(0, 0, 0, 0.2)"
+    sx={{
+      "@media (max-width: 900px)": {
+        width: '27%'
+      },
+    }}
     >XLSX</Button>
-    <Button  border='0' cursor='pointer' fontSize='20px' textColor='white' 
+
+    <Button width='150px' border='0' cursor='pointer' fontSize='20px' textColor='white' 
     bgColor='#F44336' 
     _hover={{
       bgColor: "#D32F2F",  // Cor de fundo ao passar o mouse
     }}
     height='40px' borderRadius='8px' mr='15px'onClick={() => exportToJSON(obrasFiltradas)}
     boxShadow="0px 4px 10px rgba(0, 0, 0, 0.2)"
+    sx={{
+      "@media (max-width: 900px)": {
+        width: '27%'
+      },
+    }}
     >JSON</Button>
+   </Box>
     </Box>
 
       <ul>
@@ -510,11 +555,8 @@ sx={{
                     right="10px"
                     display="flex"
                     alignItems="center"
-
                   >
-                    <Tooltip label={item.categoria.split(":")[1]?.trim()} hasArrow bg="gray.700">
-                      <Image src={row.icone} alt={row.categoria} boxSize="80px" />
-                    </Tooltip>
+                     <Image src={row.icone} alt={row.categoria} boxSize="80px" title={(row.categoria).split(':')[1]}/>
                   </Box>
                 );
               }

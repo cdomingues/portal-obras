@@ -1,6 +1,6 @@
 import { HStack, Box, Flex,  Link, Image, VStack, useDisclosure,Collapse, Img  } from '@chakra-ui/react'; // Se você estiver usando o Chakra UI
 
-import brasao from '../../assets/images/brasao/Brasao_PMMC_Normal.png'
+import brasao from '../../assets/images/brasao/brasao_horizontal_mogi.png'
 
 import hmenu from '../../assets/images/iconos/burger-menu-svgrepo-com.svg'
 

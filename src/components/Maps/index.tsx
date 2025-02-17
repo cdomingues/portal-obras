@@ -2,43 +2,78 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import { Topology } from "topojson-specification";
-import { renderToString } from "react-dom/server";
-import { FaMapMarkerAlt } from "react-icons/fa";
-import saude from "../../assets/images/iconos/salud.svg"
-import tea from '../../assets/images/ESCOLA_AUTISTA01.png'
-import { Box } from "@chakra-ui/react";
+import {Image, Box , Button, Text} from "@chakra-ui/react";
+import { categoriaIcones } from "../../utils/categorias"; // Importando a lista de categorias
 
 interface MapOutlineProps {
-  topojsonFile: string; // Arquivo TopoJSON dos bairros
+  topojsonFile: string;
+}
+
+interface Marker {
+  status: string;
+  titulo: string;
+  localidade: string;
+  longitude: number;
+  latitude: number;
+  categoria: string;
 }
 
 const MapOutline: React.FC<MapOutlineProps> = ({ topojsonFile }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const [markers, setMarkers] = useState<Marker[]>([]);
+  const [activeMarker, setActiveMarker] = useState<Marker | null>(null);
+  const [hoveredPosition, setHoveredPosition] = useState<{ x: number, y: number } | null>(null);
 
-  const [activeMarker, setActiveMarker] = useState<{
-    x: number;
-    y: number;
-    localidade: string;
-  } | null>(null);
 
-  const activeIconHTML = renderToString(
-    <FaMapMarkerAlt fontSize={10} color="rgb(35, 5, 132)" />
-  );
+  useEffect(() => {
+    const fetchMarkers = async () => {
+      try {
+        const response = await fetch(
+          "https://dadosadm.mogidascruzes.sp.gov.br/api/listaobras/"
+        );
+        const data = await response.json();
+
+        const parsedMarkers = data
+          .map((obra: any) => {
+            const [latitude, longitude] = obra.latitude_longitude
+              .split(",")
+              .map((coord: string) => parseFloat(coord.trim()));
+            return {
+              localidade: obra.local,
+              latitude,
+              longitude,
+              categoria: obra.categoria, // Supondo que a API retorna um campo `categoria`
+              titulo: obra.titulo, // Título da obra
+              status: obra.status,
+              
+            };
+          })
+          .filter(
+            (marker: Marker) =>
+              !isNaN(marker.latitude) && !isNaN(marker.longitude)
+          );
+
+        setMarkers(parsedMarkers);
+      } catch (error) {
+        console.error("Erro ao buscar os dados da API:", error);
+      }
+    };
+
+    fetchMarkers();
+  }, []);
 
   useEffect(() => {
     const svgElement = svgRef.current;
-
     if (!svgElement) return;
 
     const svg = d3.select(svgElement);
     svg.selectAll("*").remove();
 
-    const g = svg.append("g"); // Grupo para suportar zoom
+    const g = svg.append("g");
 
     const fetchMap = async () => {
       try {
         const topojsonData = (await d3.json(topojsonFile)) as Topology;
-
         if (!topojsonData.objects || Object.keys(topojsonData.objects).length === 0) {
           throw new Error("O arquivo TopoJSON não contém objetos válidos.");
         }
@@ -50,11 +85,9 @@ const MapOutline: React.FC<MapOutlineProps> = ({ topojsonFile }) => {
 
         const width = 1200;
         const height = 600;
-
         const projection = d3.geoMercator().fitSize([width, height], geojsonData);
         const pathGenerator = d3.geoPath().projection(projection);
 
-        // Renderizar os bairros
         g.selectAll("path")
           .data((geojsonData as any).features)
           .enter()
@@ -64,39 +97,40 @@ const MapOutline: React.FC<MapOutlineProps> = ({ topojsonFile }) => {
           .attr("stroke", "white")
           .attr("stroke-width", 0.5);
 
-        // Adicionar marcadores com activeIcon
-        const markers = [
-          { localidade: "Local 1", longitude: -46.2005685, latitude: -23.5155994 },
-          { localidade: "Local 2", longitude: -46.1795000, latitude: -23.5165000 },
-          { localidade: "Local 3", longitude: -46.2500000, latitude: -23.5170000 },
-        ];
-
+        // Renderizar marcadores com cores baseadas na categoria
         g.selectAll(".marker")
           .data(markers)
           .enter()
-          .append("foreignObject")
+          .append("circle")
           .attr("class", "marker")
-          .attr("x", (d: any) => {
+          .attr("cx", (d: any) => {
             const projected = projection([d.longitude, d.latitude]);
-            return projected ? projected[0] - 15 : null; // Ajusta para centralizar
+            return projected ? projected[0] : null;
           })
-          .attr("y", (d: any) => {
+          .attr("cy", (d: any) => {
             const projected = projection([d.longitude, d.latitude]);
-            return projected ? projected[1] - 30 : null; // Ajusta para centralizar
+            return projected ? projected[1] : null;
           })
-          .attr("width", 30) // Largura do ícone
-          .attr("height", 30) // Altura do ícone
-          .html(activeIconHTML)
+          .attr("r", 5)
+          .attr("fill", (d: Marker) => {
+            const categoriaInfo = categoriaIcones.find(
+              (item) => item.categoria === d.categoria
+            );
+            return categoriaInfo ? categoriaInfo.cor : "#000000"; // Preto para categorias não definidas
+          })
+          .attr("stroke", "#fff")
+          .attr("stroke-width", 1)
           .on("mouseover", function (_event, d) {
             const projected = projection([d.longitude, d.latitude]);
             if (projected) {
-              setActiveMarker({
-                x: projected[0],
-                y: projected[1],
-                localidade: d.localidade,
+              setHoveredPosition({
+                x: projected[0], // Posição horizontal para exibir a caixa
+                y: projected[1], // Posição vertical para exibir a caixa
               });
+              setActiveMarker(d); // Definir o marcador ativo ao passar o mouse
             }
           });
+         
 
         // Configuração do zoom
         const zoom = d3.zoom<SVGSVGElement, unknown>()
@@ -116,87 +150,76 @@ const MapOutline: React.FC<MapOutlineProps> = ({ topojsonFile }) => {
     };
 
     fetchMap();
-  }, [topojsonFile, activeIconHTML]);
+  }, [topojsonFile, markers]);
+
+  const handleClose = () => {
+    setActiveMarker(null); // Fechar o box ao clicar no botão de fechar
+  };
 
   return (
-    <Box width='100vw' style={{ position: "relative" }}
-    
-    >
+    <Box width="100vw" alignItems="center">
       <svg
         ref={svgRef}
-        width={1200}
+        width="100%"
         height={600}
         style={{ border: "1px solid black" }}
       ></svg>
-      {activeMarker && (
-        <div
-        
-          style={{
-            position: "absolute",
-            top: "10%",
-            left: `${activeMarker.x + 20}px`,
-            //top: `${activeMarker.y}px`,
-            background: "white",
-            border: "1px solid black",
-            borderRadius: "5px",
-            padding: "10px",
-            boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
-            zIndex: 1000,
-            width: "20vw",
-            height:"450px ",
-          }}
+
+{hoveredPosition && activeMarker && (
+        <Box
+          border='1px solid black'
+           width='350px'
+          position="absolute"
+          top="50%"
+          right="5px"
+          bg="white"
+          p={3}
+          borderRadius="10px"
+          boxShadow="15px"
+          zIndex={999}
+          transform="translate(-50%, -100%)"
         >
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', fontFamily: 'Arial, sans-serif' }}>
-      {/* Alinhamento do SVG e texto */}
-      <div style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
-        <img src={saude} alt="" width="60px" />
-        <div style={{color: '#7874B2', fontWeight: "bold", fontSize:"25px", marginLeft: '10px', marginTop: '5px'}}>Saúde</div>
-      </div>
-      {/* Texto de descrição */}
-      <p style={{ color: '#000', fontSize: '14px', fontFamily: "sans-serif" }}>Escola Clinica do Espectro Autista - TEA</p>
-    </div>
-    <div style={{display: 'flex', justifyContent:'center', paddingBottom:'15px'}}><img   src={tea} alt="" width="90%"/></div>
-    <div><div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-
-        
-        justifyContent: 'center',
-        width: '300px', // Largura da barra
-        height: '40px', // Altura da barra
-        backgroundColor: '#d3d3d3', // Cor cinza
-        borderRadius: '8px', // Bordas arredondadas
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '16px',
-        fontWeight: 'bold',
-        color: '#333', // Cor do texto
-        margin: '0 auto', // Centralizar horizontalmente
-      }}
-    >
-      Finalizada: 100%
-    </div></div>
-          
-          {/* <p>{activeMarker.localidade}</p> */}
-          <p>Bairro: Jardim Rodeio</p>
-          <p>Secretaria Responsável: SMS</p>
-          <button>Saiba Mais</button>
-          
-
-          <button onClick={() => setActiveMarker(null)} style={{
-      position: 'absolute',
-      top: '10px',
-      right: '10px',
-      margin: 0,
-      padding: '5px 10px',
-      backgroundColor: '#f0f0f0',
-      border: '1px solid #ccc',
-      borderRadius: '5px',
-      cursor: 'pointer',
-    }}>
+          <Text fontWeight="bold">{activeMarker.titulo}</Text>
+          <Text>Status: {activeMarker.status}</Text>
+          <Box>
+          {categoriaIcones.map((row) => {
+              if (row.categoria === activeMarker.categoria) {
+                return (
+                  <Box
+                    key={row.categoria}
+                    position="absolute"
+                    top="10px"
+                    left="10px"
+                    display="flex"
+                    alignItems="center"
+                    
+                    
+                  >
+                     <Image width="40px"
+                   height="40px" src={row.icone} alt={row.categoria}  title={(row.categoria).split(':')[1]}/>
+                  </Box>
+                );
+              }
+              return null;
+            })}
+ <Button
+            onClick={handleClose}
+            colorScheme="red"
+            size="sm"
+            position="absolute"
+            top="10px"  // Distância do topo
+            right="10px"  // Distância da borda direita
+            p={0}
+            width="20px"
+            height="20px"
+            borderRadius="50%"
+          >
             X
-          </button>
-        </div>
+            </Button>
+
+          </Box>
+         
+        </Box>
       )}
     </Box>
   );
