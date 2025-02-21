@@ -1,4 +1,4 @@
-import { Box, Button,  Image, VStack, Text, Tooltip, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
+import { Box, Button,  Image, VStack, Text,  Input, InputGroup, InputRightElement } from "@chakra-ui/react";
 //import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 //import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import React, { useState, useEffect } from "react";
@@ -32,6 +32,7 @@ type ValorExecutado = {
 };
 
 export type ObraApiResponse = {
+  contrato: any;
   thumbnail: string | undefined;
   id: string;
   situacao: string;
@@ -88,6 +89,7 @@ export type ObraApiResponse = {
   fonte_recurso: string;
   tipo_licitacao: string;
   bairro: string;
+  id_contrato:string;
 };
 
 const Obras = () => {
@@ -105,19 +107,6 @@ const Obras = () => {
   console.log(currentPage)
   const ITEMS_PER_PAGE = 10;
 
-  /* const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const scrollAmount = 200;
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  }; */
-
-    
   
   
   useEffect(() => {

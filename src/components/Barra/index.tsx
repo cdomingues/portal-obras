@@ -59,9 +59,15 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ percentual_etapa }) => {
         fontWeight="bold"
         color={progress > 50 ? "white" : "black"} // Ajusta a cor do texto para melhor contraste
         zIndex="1"
+        fontSize='24px'
+        fontFamily='sans-serif'
       >
         {progress}%
       </Text>
+
+    
+
+
     </Box>
   );
 };

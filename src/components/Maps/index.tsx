@@ -2,20 +2,25 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import { Topology } from "topojson-specification";
-import {Image, Box , Button, Text} from "@chakra-ui/react";
+import {Image, Box , Button, Text,  Img} from "@chakra-ui/react";
 import { categoriaIcones } from "../../utils/categorias"; // Importando a lista de categorias
+import not_found from '../../assets/images/not-found.jpg';
+import Barra from "../Barra";
 
 interface MapOutlineProps {
   topojsonFile: string;
 }
 
 interface Marker {
+  id: string;
   status: string;
   titulo: string;
   localidade: string;
   longitude: number;
   latitude: number;
   categoria: string;
+  thumbnail: string;
+  percentual_etapa: string;
 }
 
 const MapOutline: React.FC<MapOutlineProps> = ({ topojsonFile }) => {
@@ -23,6 +28,9 @@ const MapOutline: React.FC<MapOutlineProps> = ({ topojsonFile }) => {
   const [markers, setMarkers] = useState<Marker[]>([]);
   const [activeMarker, setActiveMarker] = useState<Marker | null>(null);
   const [hoveredPosition, setHoveredPosition] = useState<{ x: number, y: number } | null>(null);
+  //const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
+ // const [zoomLevel, setZoomLevel] = useState(1);
+
 
 
   useEffect(() => {
@@ -34,6 +42,7 @@ const MapOutline: React.FC<MapOutlineProps> = ({ topojsonFile }) => {
         const data = await response.json();
 
         const parsedMarkers = data
+        .filter((obra: any) => obra.tipo === "Tipo:OBRA" && obra.status !== "07 - OBRA RESCINDIDA")
           .map((obra: any) => {
             const [latitude, longitude] = obra.latitude_longitude
               .split(",")
@@ -45,6 +54,9 @@ const MapOutline: React.FC<MapOutlineProps> = ({ topojsonFile }) => {
               categoria: obra.categoria, // Supondo que a API retorna um campo `categoria`
               titulo: obra.titulo, // Título da obra
               status: obra.status,
+              thumbnail: obra.thumbnail,
+              percentual_etapa: obra.percentual_etapa,
+              id: obra.id
               
             };
           })
@@ -97,6 +109,7 @@ const MapOutline: React.FC<MapOutlineProps> = ({ topojsonFile }) => {
           .attr("stroke", "white")
           .attr("stroke-width", 0.5);
 
+        
         // Renderizar marcadores com cores baseadas na categoria
         g.selectAll(".marker")
           .data(markers)
@@ -157,70 +170,95 @@ const MapOutline: React.FC<MapOutlineProps> = ({ topojsonFile }) => {
   };
 
   return (
-    <Box width="100vw" alignItems="center">
+    <Box width="100%" alignItems="center" >
       <svg
         ref={svgRef}
         width="100%"
-        height={600}
+        height={700}
         style={{ border: "1px solid black" }}
       ></svg>
 
 {hoveredPosition && activeMarker && (
         <Box
-          border='1px solid black'
-           width='350px'
-          position="absolute"
-          top="50%"
-          right="5px"
-          bg="white"
-          p={3}
-          borderRadius="10px"
-          boxShadow="15px"
-          zIndex={999}
-          transform="translate(-50%, -100%)"
+        border="1px solid black"
+        width="350px"
+        position="fixed"
+        top="10%"  // Ajuste a posição conforme necessário
+        right="5px"
+        bg="white"
+        p={3}
+        borderRadius="10px"
+        boxShadow="0px 4px 10px rgba(0, 0, 0, 0.2)"
+        zIndex={999}
+        transform="none"  
         >
-          <Text fontWeight="bold">{activeMarker.titulo}</Text>
-          <Text>Status: {activeMarker.status}</Text>
-          <Box>
+           <Box  padding="5px" display="flex" justifyContent="space-between" alignItems="center">
           {categoriaIcones.map((row) => {
               if (row.categoria === activeMarker.categoria) {
                 return (
                   <Box
                     key={row.categoria}
-                    position="absolute"
-                    top="10px"
+                    //position="fixed"
+                    padding='10px'
                     left="10px"
                     display="flex"
-                    alignItems="center"
-                    
-                    
+                                     
                   >
-                     <Image width="40px"
-                   height="40px" src={row.icone} alt={row.categoria}  title={(row.categoria).split(':')[1]}/>
+                     <Image width="50px"
+                   height="50px" src={row.icone} alt={row.categoria}  title={(row.categoria).split(':')[1]}/>
                   </Box>
                 );
               }
               return null;
             })}
- <Button
+            <Button
             onClick={handleClose}
-            colorScheme="red"
-            size="sm"
-            position="absolute"
-            top="10px"  // Distância do topo
-            right="10px"  // Distância da borda direita
-            p={0}
-            width="20px"
-            height="20px"
-            borderRadius="50%"
-          >
-            X
-            </Button>
+            //color='red'
+            size="lg"
+            width="40px"
+            height="40px"
+            borderRadius="12px"
+            fontSize='25px'
+            fontWeight='bold'
+            cursor='pointer'
+            transition="background 0.3s ease-in-out"
+            _hover={{ bg: "lightgrey" }}
+              >  X </Button>
 
           </Box>
+          <Text ml='10px' fontWeight="bold">{activeMarker.titulo.length > 100 
+    ? `${activeMarker.titulo.substring(0, 100)}...` 
+    : activeMarker.titulo}</Text>
+          <Text ml='10px' fontWeight="bold">STATUS: {(activeMarker.status).split('-')[1]}</Text>
+
+          <Box>
+          <Img 
+          border='1px solid lightgrey' 
+          ml='10px' 
+          width="95%"   
+          borderRadius='10px'
+          src={activeMarker.thumbnail ? activeMarker.thumbnail : not_found}  alt="" />
+          </Box>
+         
+         <Barra percentual_etapa={Number(activeMarker.percentual_etapa)} />
+         <Box 
+         ml='5px' 
+         mb='5px'
+         width='98%' 
+         border='1px solid black'
+        fontSize='24px'
+        fontFamily='sans-serif'
+        py='5px'
+        textAlign='center'
+        borderRadius='10px'
+        bg="#393D6F" color="white"
+        cursor='pointer'
+        onClick={() => window.location.href = `/detalhes?${activeMarker.id}`}
+         >Detalhes</Box>
          
         </Box>
       )}
+      
     </Box>
   );
 };

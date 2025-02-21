@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import Footer from "../../components/Footer";
 import Menu from "../../components/Menu";
 import {ObraApiResponse} from '../../components/ListarObras'
-import { Box, Center, ChakraProvider, Image, Table, Tbody, Td, Text, Th, Tooltip, Tr } from "@chakra-ui/react";
-import { bairros } from "../../utils/bairros";
+import { Box,  Image, Table, Tbody, Td, Text, Th, Tr } from "@chakra-ui/react";
+//import { bairros } from "../../utils/bairros";
 import moneyFormatter from "../../utils/moneyFormatter";
 import { categoriaIcones } from "../../utils/categorias";
 import  ProgressBar from '../../components/Barra';
-import not_found from '../../assets/images/not-found.jpg'
+//import not_found from '../../assets/images/not-found.jpg'
 import ImageCarousel from '../../components/CarroselImagens'
 
 
@@ -15,7 +15,7 @@ function Detalhes({ id }: any) {
   const [obra, setObra] = useState<ObraApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [daysDiff, setDaysDiff] = useState<number>(0); 
+  //const [daysDiff, setDaysDiff] = useState<number>(0); 
 
   
 
@@ -137,75 +137,87 @@ function Detalhes({ id }: any) {
             },
           }}>
           <Tr >
-            <Th borderRadius='8px' bg="#4c59af" color="white">Nome</Th>
+            <Th borderRadius='8px' bg="#393D6F" color="white">Nome</Th>
            <Td borderRadius='8px' bgColor="#fff9ff" border="1px solid #ddd" p="10px"
            
            >
-           {obra?.titulo?.length > 20 ? `${obra.titulo.slice(0, 40)}...` : obra?.titulo}
+           {obra?.titulo}
            
             </Td>
           </Tr>
          
+          <Th borderRadius='8px' bg="#393D6F" color="white">Contrato</Th>
+           <Td borderRadius='8px' bgColor="#fff9ff" border="1px solid #ddd" 
+         //  title="Clique aqui para ver as informações completas do contrato "
+           _hover={{ bgColor: "#f0e6f0", transition: "0.3s" }}
+          onClick={() => window.open(`https://dadosabertos.mogidascruzes.sp.gov.br/contratos-atas/contratos_teste_detalhes?${obra?.id_contrato}`, '_blank')}
+
+           cursor='pointer'
+           display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'
+           >
+           {obra?.numero_contrato}    <Text mr='15px' fontWeight='bold'>  Clique aqui para ver as informações completas do contrato</Text>
+            </Td>
+          
           
           <Tr>
-            <Th borderRadius='8px'bg="#4c59af" color="white">Data de Início</Th>
+            <Th borderRadius='8px'bg="#393D6F" color="white">Data de Início</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{formatarData(obra?.inicio_ate)}</Td>
           </Tr>
           <Tr>
-            <Th borderRadius='8px'bg="#4c59af" color="white">Data de Conclusão</Th>
+            <Th borderRadius='8px'bg="#393D6F" color="white">Data de Conclusão</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">
               {obra?.aditivo_prazo !== null ? formatarData(obra?.aditivo_prazo) : formatarData(obra?.conclusao_ate)}
             </Td>
           </Tr>
           <Tr>
-            <Th borderRadius='8px'bg="#4c59af" color="white">Prazo Total</Th>
+            <Th borderRadius='8px'bg="#393D6F" color="white">Prazo Total</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{days} dias</Td>
           </Tr>
           <Tr>
-            <Th borderRadius='8px'bg="#4c59af" color="white">Endereço</Th>
+            <Th borderRadius='8px'bg="#393D6F" color="white">Endereço</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{obra?.endereco}</Td>
           </Tr>
           <Tr>
-            <Th borderRadius='8px' bg="#4c59af" color="white">Bairro</Th>
+            <Th borderRadius='8px' bg="#393D6F" color="white">Bairro</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">
            {obra?.bairro}
             </Td>
           </Tr>
           <Tr>
-            <Th borderRadius='8px'bg="#4c59af" color="white">Área beneficiada</Th>
+            <Th borderRadius='8px'bg="#393D6F" color="white">Área beneficiada</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{obra?.orgao_responsavel}</Td>
           </Tr>
           <Tr>
-            <Th borderRadius='8px'bg="#4c59af" color="white">Área fiscalizadora</Th>
+            <Th borderRadius='8px'bg="#393D6F" color="white">Área fiscalizadora</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{obra?.secretaria_responsavel}</Td>
           </Tr>
           
           <Tr>
-            <Th  borderRadius='8px' bg="#4c59af" color="white">Agente fiscalizador</Th>
+            <Th  borderRadius='8px' bg="#393D6F" color="white">Agente fiscalizador</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{obra?.responsavel_fiscalizacao}</Td>
           </Tr>
           <Tr>
-            <Th borderRadius='8px' bg="#4c59af" color="white">Valor previsto</Th>
+            <Th borderRadius='8px' bg="#393D6F" color="white">Valor previsto</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{moneyFormatter(obra?.valor_total_aditamento_reajuste_contrato)}</Td>
           </Tr>
           <Tr>
-            <Th borderRadius='8px' bg="#4c59af" color="white">Valor medido</Th>
+            <Th borderRadius='8px' bg="#393D6F" color="white">Valor medido</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{moneyFormatter(obra?.valor_total_medicao)}</Td>
           </Tr>
           <Tr>
-            <Th borderRadius='8px' bg="#4c59af" color="white">Percentual medido</Th>
+            <Th borderRadius='8px' bg="#393D6F" color="white">Percentual medido</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{percentualExecutado} %</Td>
           </Tr>
           
-            <Th borderRadius='8px' bg="#4c59af" color="white">Última atualização</Th>
+            <Th borderRadius='8px' bg="#393D6F" color="white">Última atualização</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{formatarData(obra?.data_etapa)}</Td>
             <Tr>
-            <Th borderRadius='8px' bg="#4c59af" color="white">Etapa</Th>
+            <Th borderRadius='8px' bg="#393D6F" color="white">Etapa</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{obra?.etapas}</Td>
           </Tr>
           
           <Tr>
-            <Th borderRadius='8px' bg="#4c59af" color="white">Justificativa do aditivo</Th>
+            <Th borderRadius='8px' bg="#393D6F" color="white">Justificativa do aditivo</Th>
            <Td borderRadius='8px' bgColor="#fff9ff"border="1px solid #ddd" p="10px">{obra?.justificativa_aditivo}</Td>
           </Tr>
 
@@ -320,7 +332,7 @@ function Detalhes({ id }: any) {
           }
 
           .obra-table th {
-            background-color: #4c59af;
+            background-color: #393D6F;
             color: white;
           }
 

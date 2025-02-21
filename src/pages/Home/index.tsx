@@ -88,10 +88,19 @@ Nosso objetivo é fornecer à população uma visão clara e detalhada das inici
      </Box>
     
 <Painel /> 
-{/*<Box ><Maps topojsonFile={"/abairramento.json"} /></Box>
-<Box marginX='60px' alignItems='center'>
-<iframe src="https://app.powerbi.com/view?r=eyJrIjoiODhjY2NhZDktZDcxNi00YWUwLThlYmUtMTMxNGEyZGJjNzg0IiwidCI6IjU3MjU0YWRhLTUxMmUtNDhjNi05NTI5LTAyOTE4ODg1OTliZiJ9" frameborder="0" width='660px' height='600px' ></iframe>
-</Box>*/}
+<Box w='100vw' h='100vh' display='flex' justifyContent='center' alignItems='center'
+sx={{
+  "@media (max-width: 900px)": {
+    display:'none',
+  },
+}}
+>
+<iframe src="https://app.powerbi.com/view?r=eyJrIjoiODhjY2NhZDktZDcxNi00YWUwLThlYmUtMTMxNGEyZGJjNzg0IiwidCI6IjU3MjU0YWRhLTUxMmUtNDhjNi05NTI5LTAyOTE4ODg1OTliZiJ9" 
+ width='80%'
+  height='100%' 
+  style={{ border: "none" }}
+  ></iframe>
+</Box>
     
      <Footer />
      </>
