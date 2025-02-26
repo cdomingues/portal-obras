@@ -8,7 +8,8 @@ import moneyFormatter from "../../utils/moneyFormatter";
 import { categoriaIcones } from "../../utils/categorias";
 import  ProgressBar from '../../components/Barra';
 //import not_found from '../../assets/images/not-found.jpg'
-import ImageCarousel from '../../components/CarroselImagens'
+import ImageCarousel from '../../components/CarroselImagens';
+import Mapa from '../../components/MapaDetalhe'
 
 
 function Detalhes({ id }: any) {
@@ -33,11 +34,11 @@ function Detalhes({ id }: any) {
           throw new Error("Falha ao carregar os dados");
         }
         const result: ObraApiResponse[] = await response.json();
-        console.log("Dados recebidos:", result);
+        //console.log("Dados recebidos:", result);
 
         // Filtra a obra pelo ID fornecido
         const obraEncontrada = result.find((obra) => obra.id === id);
-
+        console.log(obraEncontrada)
         if (obraEncontrada) {
           setObra(obraEncontrada);
         } else {
@@ -79,9 +80,9 @@ function Detalhes({ id }: any) {
     const percentualExecutado = Math.round((obra.valor_total_medicao / obra.valor_total_aditamento_reajuste_contrato)  * 100 * 100 / 100 );
           console.log(percentualExecutado);
     const statusCode = obra.status.split("-")[0].trim();       
-  
-          
-
+    const latitude = Number(obra.latitude_longitude.split(',')[0]);
+    const longitude = Number(obra.latitude_longitude.split(',')[1]);
+   
   return  (
     
         <>
@@ -106,7 +107,7 @@ function Detalhes({ id }: any) {
       
         {obra?.nome_da_obra}
         </Text>
-      <Box display='flex' flexDirection='row' marginX='10px'
+      <Box display='flex' flexDirection='row' marginX='10px' 
       sx={{
         "@media (max-width: 600px)": {
           flexDir:'column',
@@ -117,7 +118,8 @@ function Detalhes({ id }: any) {
       >
       
       
-        <Box width={'60%'} 
+        <Box width='60%'
+        
         sx={{
           "@media (max-width: 600px)": {
            width: '100%',
@@ -147,16 +149,35 @@ function Detalhes({ id }: any) {
           </Tr>
          
           <Th borderRadius='8px' bg="#393D6F" color="white">Contrato</Th>
-           <Td borderRadius='8px' bgColor="#fff9ff" border="1px solid #ddd" 
-         //  title="Clique aqui para ver as informações completas do contrato "
-           _hover={{ bgColor: "#f0e6f0", transition: "0.3s" }}
-          onClick={() => window.open(`https://dadosabertos.mogidascruzes.sp.gov.br/contratos-atas/contratos_teste_detalhes?${obra?.id_contrato}`, '_blank')}
-
-           cursor='pointer'
-           display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'
-           >
-           {obra?.numero_contrato}    <Text mr='15px' fontWeight='bold'>  Clique aqui para ver as informações completas do contrato</Text>
-            </Td>
+          {obra?.id_contrato ? (
+  <Td
+    borderRadius='8px'
+    bgColor="#fff9ff"
+    border="1px solid #ddd"
+    _hover={{ bgColor: "#f0e6f0", transition: "0.3s" }}
+    onClick={() => window.open(`https://dadosabertos.mogidascruzes.sp.gov.br/contratos-atas/contratos_teste_detalhes?${obra?.id_contrato}`, '_blank')}
+    cursor='pointer'
+    display='flex'
+    flexDirection='row'
+    alignItems='center'
+    justifyContent='space-between'
+  >
+    {obra?.numero_contrato}    
+    <Text mr='15px' fontWeight='bold'>Clique aqui para ver as informações completas do contrato</Text>
+  </Td>
+) : (
+  <Td
+    borderRadius='8px'
+    bgColor="#fff9ff"
+    border="1px solid #ddd"
+    display='flex'
+    flexDirection='row'
+    alignItems='center'
+    justifyContent='space-between'
+  >
+    {obra?.numero_contrato}
+  </Td>
+)}
           
           
           <Tr>
@@ -303,12 +324,15 @@ function Detalhes({ id }: any) {
     
   <ImageCarousel obraId={obra.id} />
   
-
-       
-
         </Box> 
+       
       </Box>
       
+      <Box width="99%" height="450px" overflow="hidden" marginLeft='10px' >
+  <Mapa latitude={latitude} longitude={longitude} descricao={obra.titulo}/>
+
+</Box>
+        
       <Footer />
       <style>
         {`
