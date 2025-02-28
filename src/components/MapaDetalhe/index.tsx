@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { FaLocationDot } from "react-icons/fa6";
+
 
 interface MapaProps {
   latitude: number;
@@ -30,7 +30,7 @@ const Mapa: React.FC<MapaProps> = ({ latitude, longitude, descricao }) => {
         width: 30px;
         height: 30px;
       ">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="50" height="50" fill="dark blue">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="50" height="50" fill="blue">
           <path d="M192 0C86 0 0 86 0 192c0 77.4 27 135.4 85.8 211.8 26.5 34.5 57.5 70.7 92.4 110.9a24 24 0 0 0 36.5 0c34.9-40.2 65.9-76.4 92.4-110.9C357 327.4 384 269.4 384 192 384 86 298 0 192 0zm0 272a80 80 0 1 1 0-160 80 80 0 0 1 0 160z"/>
         </svg>
       </div>`,

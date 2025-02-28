@@ -156,7 +156,10 @@ const Obras = () => {
     (item) => 
       item.tipo === "Tipo:OBRA" && 
       item.status !== "07 - OBRA RESCINDIDA" &&
-      item.titulo.toLocaleLowerCase().includes(safeSearchTerm)  &&
+      item.titulo.toLocaleLowerCase().includes(safeSearchTerm)  ||
+      item.bairro.toLocaleLowerCase().includes(safeSearchTerm) ||
+      item.razao_social_contratada.toLocaleLowerCase().includes(safeSearchTerm)
+      &&
       (!selectedCategory || item.categoria === selectedCategory)
   );
 
@@ -588,7 +591,7 @@ sx={{
 
               <VStack display="flex" flexDirection="row" pl="8px">
                 <Text fontWeight="bold" color="gray.800">BAIRRO: </Text>
-                <Text>{bairros.map(row => row.id === item?.bairro ? row.nome : null)}</Text>
+                <Text>{item?.bairro}</Text>
               </VStack>
             </VStack>
           </Box> 

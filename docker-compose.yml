@@ -8,7 +8,8 @@ services:
       - "5173:5173"
     environment:
       - NODE_ENV=production
-    command: ["npm", "run", "preview", "--", "--host", "--port", "5173"]
+      - CHOKIDAR_USEPOLLING=true
+    command: ["npm", "run", "dev", "--", "--host", "--port", "5173"]
     volumes:
       - .:/app
       - /app/node_modules
