@@ -10,16 +10,12 @@ import Detalhes from "./pages/ObraDetalhes";
 import Sobre from '../src/pages/Sobre';
 
 
-
-
-
 function App()
 {
   return(
     <>
     <Header />
-    
-    
+        
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} /> {/* Página inicial */}
@@ -27,9 +23,6 @@ function App()
         <Route path="/obras" element={<Obras />} /> 
         <Route path='/detalhes' element={<Detalhes/>}/>
         <Route path='sobre' element={<Sobre/>}/>
-       
-
-      
       </Routes>
     </Router></>
   )

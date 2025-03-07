@@ -104,7 +104,7 @@ const Obras = () => {
   
   
   
-  console.log(currentPage)
+  //console.log(currentPage)
   const ITEMS_PER_PAGE = 10;
 
   
@@ -119,7 +119,7 @@ const Obras = () => {
           throw new Error("Falha ao carregar os dados");
         }
         const result = await response.json();
-        console.log("Dados recebidos:", result); // Verificar os dados recebidos no console
+      //  console.log("Dados recebidos:", result); // Verificar os dados recebidos no console
         setData2(result);
       } catch (error) {
         console.error("Erro ao carregar os dados:", error);
@@ -143,26 +143,22 @@ const Obras = () => {
   const safeSearchTerm = searchTerm ? searchTerm.toLowerCase() : "";
 
   const handleFilter = (category: React.SetStateAction<string | null>) => {
-    if (selectedCategory === category) {
-      // Remove o filtro caso o mesmo ícone seja clicado novamente
-      setSelectedCategory(null);
-    } else {
-      // Aplica o filtro
-      setSelectedCategory(category);
-    }
+    setSelectedCategory(selectedCategory === category ? null : category);
   };
 
-  const obrasFiltradas = data2.filter(
-    (item) => 
-      item.tipo === "Tipo:OBRA" && 
-      item.status !== "07 - OBRA RESCINDIDA" &&
-      item.titulo.toLocaleLowerCase().includes(safeSearchTerm)  ||
-      item.bairro.toLocaleLowerCase().includes(safeSearchTerm) ||
-      item.razao_social_contratada.toLocaleLowerCase().includes(safeSearchTerm)
-      &&
-      (!selectedCategory || item.categoria === selectedCategory)
+  const obrasFiltradas = data2
+  .filter((item) => 
+    item.tipo === "Tipo:OBRA" && 
+    item.status !== "07 - OBRA RESCINDIDA"
+  )
+  .filter((item) => 
+    !selectedCategory || item.categoria === selectedCategory
+  )
+  .filter((item) =>
+    item.titulo.toLowerCase().includes(safeSearchTerm) ||
+    item.bairro.toLowerCase().includes(safeSearchTerm) ||
+    item.razao_social_contratada.toLowerCase().includes(safeSearchTerm)
   );
-
 const totalPages = Math.ceil(obrasFiltradas.length / ITEMS_PER_PAGE)  
 
 const filteredObras = obrasFiltradas.filter((obra)=>
@@ -178,16 +174,22 @@ const totalObras = obrasFiltradas.length;
 const totalObrasAndamento = obrasFiltradas.filter((item) =>
   item.status.includes("05 - EM EXECUÇÃO")
 ).length;
+
 const totalObrasConcluidas = obrasFiltradas.filter((item) =>
   item.status.includes("06 - OBRA CONCLUIDA")
 ).length;
+
 const totalInvestido = obrasFiltradas.reduce((acc, item) => {
   const valor = item.valor_total_aditamento_reajuste_contrato;
   return isNaN(valor) ? acc : acc + valor;
 }, 0);
 
+//console.log(totalInvestido)
+
 const percentualConcluidas =
   (totalObrasConcluidas / (totalObrasAndamento + totalObrasConcluidas)) * 100;
+//console.log(totalObrasConcluidas)
+
 
 const handlePageClick = (data: {selected: number}) =>{
   const newPage = Math.max(1, Math.min(data.selected +1, totalPages))

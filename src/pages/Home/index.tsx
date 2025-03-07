@@ -8,13 +8,10 @@ import Menu from '../../components/Menu';
 
 //import FiltroObras from '../../components/FiltroObras';
 import Footer from '../../components/Footer';
+import MapaGeral from '../../components/MapaGeral';
 //import Maps from '../../components/Maps';
 
 function HomePage() {
-
-   
-
-   
 
   return (
     <>
@@ -23,14 +20,19 @@ function HomePage() {
 backgroundImage={`url(${background})`}
 backgroundSize="cover"
 backgroundPosition="center"
+backgroundRepeat= "no-repeat"
 borderRadius='7px'
 height="500px"
-width="100%"
+width="100vw"
+maxWidth="100vw" 
 backgroundColor="" // Exemplo de camada translúcida
 backgroundBlendMode="overlay"
 display="flex"
 flexDirection="column"
-justifyContent="space-between" >
+justifyContent="space-between" 
+//mr='5px'
+overflow= "hidden"
+>/
     
     <Text 
     
@@ -89,17 +91,9 @@ Nosso objetivo é fornecer à população uma visão clara e detalhada das inici
     
 <Painel /> 
 <Box w='100vw' h='100vh' display='flex' justifyContent='center' alignItems='center'
-sx={{
-  "@media (max-width: 900px)": {
-    display:'none',
-  },
-}}
+
 >
-<iframe src="https://app.powerbi.com/view?r=eyJrIjoiODhjY2NhZDktZDcxNi00YWUwLThlYmUtMTMxNGEyZGJjNzg0IiwidCI6IjU3MjU0YWRhLTUxMmUtNDhjNi05NTI5LTAyOTE4ODg1OTliZiJ9" 
- width='80%'
-  height='100%' 
-  style={{ border: "none" }}
-  ></iframe>
+<MapaGeral />
 </Box>
     
      <Footer />

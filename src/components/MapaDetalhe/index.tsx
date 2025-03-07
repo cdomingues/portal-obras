@@ -40,7 +40,7 @@ const Mapa: React.FC<MapaProps> = ({ latitude, longitude, descricao }) => {
     <MapContainer
       center={[latitude, longitude]} // Coordenadas iniciais
       zoom={12}
-      style={{ height: "400px", width: "100%", margin: "0 auto", marginTop: "20px" }}     
+      style={{ height: "400px", width: "95%", margin: "0 auto", marginTop: "20px" }}     
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

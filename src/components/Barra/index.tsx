@@ -22,7 +22,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ percentual_etapa }) => {
 
   // Define a cor com base no percentual
   const getColor = (percentual: number) =>
-    percentual <= 40 ? "red" : percentual > 40 && percentual <= 75 ? "#E6C972" : percentual > 75 ? "green": "white";
+    percentual <= 40 ? "#de4134" : percentual > 40 && percentual <= 75 ? "#f9a51a" : percentual > 75 ? "#8bc53f": "white";
 
 
   return (

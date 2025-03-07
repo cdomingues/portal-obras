@@ -1,10 +1,11 @@
 import  Menu  from "../../components/Menu";
 import Footer from '../../components/Footer'
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box,Text } from "@chakra-ui/react";
 
 function Sobre(){
     return(
-        <Flex direction="column" minH="90vh" ml='10px'>
+      <>
+        <Box  minH="90vh" ml='10px'>
         <Menu />
         <Box as="main" flex="1" p={2}>
         <Text fontSize="30px" fontWeight="bold" mb={4}>
@@ -21,8 +22,10 @@ function Sobre(){
         </Box>
      
      
-        <Footer />
-        </Flex>
+       
+        </Box>
+         <Footer />
+         </>
     )
 }
 export default Sobre
